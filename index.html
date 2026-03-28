@@ -1,4 +1,35 @@
-PRICE/STEM (£);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="✂ Cut Log" />
+  <meta name="theme-color" content="#1a3a2a" />
+  <title>Flower Cut Log</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; }
+    body { background: #e8e2d5; }
+    #root { display: flex; justify-content: center; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-presets="react">
+
+const SUPABASE_URL = "https://jzanovmfksktrbblbspg.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6YW5vdm1ma3NrdHJiYmxic3BnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDY4MTcsImV4cCI6MjA5MDE4MjgxN30.eRDoOfpJTfg7dPDvq0jaMju5ANL7szcdr9Ua5zIwkvk";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Icons Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 const Icon = ({ d, size = 20, color = "currentColor", strokeWidth = 1.8 }) => (
@@ -381,7 +412,7 @@ function App() {
 
   const handleExport = () => {
     if (!userData?.cuts?.length) return;
-    const headers = ["Date","Bed","Variety","Stems","Length (cm)","Price (£)","Quality","Notes"];
+    const headers = ["Date","Bed","Variety","Stems","Length (cm)","Price (Ã£)","Quality","Notes"];
     const rows = userData.cuts.map(c => [
       new Date(c.cut_at).toLocaleDateString("en-GB"), c.bed_name, c.variety_name,
       c.stems, c.length_cm||"", c.price_per_stem||"", c.quality||"", c.notes||""
@@ -571,10 +602,10 @@ function App() {
                   // Stems
                   React.createElement('div', { className: "form-group" },
                     React.createElement('label', { className: "form-label" }, "Stems Cut ", React.createElement('span', { className: "required-star" }, "*")),
-                    React.createElement('div', { style:{display:'flex',alignItems:'center',gap:8,width:'100%',overflow:'hidden'} },
-                      React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String(Math.max(1,(Number(f.stems)||0)-1))})), style:{width:44,height:44,borderRadius:'50%',border:'none',background:'var(--green-pale)',fontSize:20,fontWeight:600,cursor:'pointer',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--green-dark)',fontFamily:'DM Sans,sans-serif',lineHeight:1} }, '-'),
+                    React.createElement('div', { style:{display:'flex',alignItems:'center',gap:12} },
+                      React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String(Math.max(1,(Number(f.stems)||0)-1))})), style:{width:46,height:46,borderRadius:'50%',border:'none',background:'#d0cbbe',fontSize:24,cursor:'pointer',fontFamily:"'Cormorant Garamond',serif",flexShrink:0} }, '✓'),
                       React.createElement('input', { type:'number', min:'1', value:logForm.stems, onChange:e=>setLogForm(f=>({...f,stems:e.target.value})), style:{flex:1,textAlign:'center',fontSize:32,fontFamily:"'Cormorant Garamond',serif",border:'1px solid #ccc8b8',borderRadius:10,padding:'10px 0',background:'#faf8f3',outline:'none'} }),
-                      React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String((Number(f.stems)||0)+1)})), style:{width:44,height:44,borderRadius:'50%',border:'none',background:'var(--green-pale)',fontSize:20,fontWeight:600,cursor:'pointer',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--green-dark)',fontFamily:'DM Sans,sans-serif',lineHeight:1} }, '+')
+                      React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String((Number(f.stems)||0)+1)})), style:{width:46,height:46,borderRadius:'50%',border:'none',background:'#d0cbbe',fontSize:24,cursor:'pointer',fontFamily:"'Cormorant Garamond',serif",flexShrink:0} }, '+')
                     ),
                     logErrors.stems && React.createElement('div', { className: "error-msg" }, logErrors.stems)
                   ),
@@ -585,7 +616,7 @@ function App() {
                       React.createElement('input', { className: "form-input", type:"number", min:"0", placeholder:"e.g. 40", value:logForm.length, onChange:e=>setLogForm(f=>({...f, length:e.target.value})) })
                     ),
                     React.createElement('div', { className: "form-group" },
-                      React.createElement('label', { className: "form-label" }, "Price/stem (£)"),
+                      React.createElement('label', { className: "form-label" }, "Price/stem (Ã£)"),
                       React.createElement('input', { className: "form-input", type:"number", min:"0", step:"0.05", placeholder:"0.75", value:logForm.price, onChange:e=>setLogForm(f=>({...f, price:e.target.value})) })
                     )
                   ),
@@ -652,7 +683,7 @@ function App() {
                   React.createElement('div', { className: "cut-meta" },
                     React.createElement('span', { style:{fontSize:12, color:"var(--text-light)"} }, new Date(cut.cut_at).toLocaleDateString("en-GB", {day:"numeric", month:"short", year:"numeric"})),
                     cut.length_cm && React.createElement('span', { className: "tag tag-green" }, cut.length_cm+"cm"),
-                    cut.price_per_stem && React.createElement('span', { className: "tag tag-gold" }, "£"+Number(cut.price_per_stem).toFixed(2)+"/stem"),
+                    cut.price_per_stem && React.createElement('span', { className: "tag tag-gold" }, "Ã£"+Number(cut.price_per_stem).toFixed(2)+"/stem"),
                     cut.quality && React.createElement('span', { className: "tag tag-blush" }, cut.quality)
                   ),
                   cut.notes && React.createElement('div', { style:{fontSize:13, color:"var(--text-mid)", marginTop:8, fontStyle:"italic"} }, cut.notes),
@@ -721,7 +752,7 @@ function App() {
           ),
           React.createElement('div', { className: "stats-grid" },
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, totalStems.toLocaleString()), React.createElement('div', { className: "stat-label" }, "Total Stems")),
-            React.createElement('div', { className: "stat-card accent" }, React.createElement('div', { className: "stat-val accent" }, "£" + totalRevenue.toFixed(0)), React.createElement('div', { className: "stat-label" }, "Est. Revenue")),
+            React.createElement('div', { className: "stat-card accent" }, React.createElement('div', { className: "stat-val accent" }, "Ã£"+totalRevenue.toFixed(0)), React.createElement('div', { className: "stat-label" }, "Est. Revenue")),
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, userData.cuts.length), React.createElement('div', { className: "stat-label" }, "Cuts Logged")),
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, userData.beds.length), React.createElement('div', { className: "stat-label" }, "Active Beds"))
           ),
@@ -754,7 +785,7 @@ function App() {
                           React.createElement('span', { style:{fontSize:14, color:"var(--text-dark)", fontWeight:500} }, name),
                           React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:20, fontWeight:700, color:"var(--green-dark)"} }, count)
                         ),
-                        rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "£"+rev.toFixed(2)+" est. revenue")
+                        rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "Ã£"+rev.toFixed(2)+" est. revenue")
                       );
                     })
                 ),
@@ -832,7 +863,7 @@ function App() {
                           React.createElement('span', { style:{fontSize:13, color:"var(--text-mid)", fontWeight:500} }, "w/c "+week),
                           React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:20, fontWeight:700, color:"var(--green-dark)"} }, data.stems)
                         ),
-                        data.rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "£"+data.rev.toFixed(2)+" est. revenue")
+                        data.rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "Ã£"+data.rev.toFixed(2)+" est. revenue")
                       )
                     );
                   })()
@@ -853,7 +884,7 @@ function App() {
                           React.createElement('span', { style:{fontSize:14, color:"var(--text-dark)", fontWeight:500} }, month),
                           React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:20, fontWeight:700, color:"var(--green-dark)"} }, data.stems)
                         ),
-                        data.rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "£"+data.rev.toFixed(2)+" est. revenue")
+                        data.rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "Ã£"+data.rev.toFixed(2)+" est. revenue")
                       )
                     );
                   })()
