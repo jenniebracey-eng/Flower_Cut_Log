@@ -68,7 +68,7 @@ const css = `
     --radius: 14px; --radius-sm: 8px;
   }
   body { background: var(--green-mist); font-family: 'DM Sans', sans-serif; color: var(--text-dark); }
-  .app { min-height: 100vh; max-width: 480px; margin: 0 auto; background: var(--white); position: relative; }
+  .app { min-height: 100vh; max-width: 480px; margin: 0 auto; background: var(--white); position: relative; display: flex; flex-direction: column; }
 
   /* Auth */
   .auth-screen {
@@ -110,7 +110,7 @@ const css = `
   .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; cursor: pointer; border: none; background: none; color: var(--text-light); transition: color 0.2s; font-family: 'DM Sans', sans-serif; }
   .nav-item.active { color: var(--green-dark); }
   .nav-label { font-size: 10px; font-weight: 500; }
-  .content { padding: 16px 20px 120px; min-height: 100vh; }
+  .content { padding: 16px 20px 120px; flex: 1; }
 
   /* Cards */
   .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
