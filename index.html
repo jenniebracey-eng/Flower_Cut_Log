@@ -6,18 +6,922 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Cut Log" />
-  <meta name="theme-color" content="#2c3a1e" />
+  <meta name="theme-color" content="#1a3a2a" />
   <title>Flower Cut Log</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Courier+Prime:wght@400;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-  <style>*{box-sizing:border-box;margin:0;padding:0}html,body,#root{height:100%}body{background:#e8e4db}#root{display:flex;justify-content:center}</style>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; }
+    body { background: #1a3a2a; }
+    #root { display: flex; justify-content: center; }
+  </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel" data-presets="react">
+  <div id="root"></div>
+  <script type="text/babel" data-presets="react">
+
+const SUPABASE_URL = "https://jzanovmfksktrbblbspg.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6YW5vdm1ma3NrdHJiYmxic3BnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDY4MTcsImV4cCI6MjA5MDE4MjgxN30.eRDoOfpJTfg7dPDvq0jaMju5ANL7szcdr9Ua5zIwkvk";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ─── Icons ──────────────────────────────────────────────────────────────────
+const Icon = ({ d, size = 20, color = "currentColor", strokeWidth = 1.8 }) => (
+  React.createElement('svg', {
+    width: size, height: size, viewBox: "0 0 24 24", fill: "none",
+    stroke: color, strokeWidth, strokeLinecap: "round", strokeLinejoin: "round"
+  }, React.createElement('path', { d }))
+);
+const icons = {
+  scissors: "M6 9l6 6M6 15l6-6M20 4l-6 6M20 20l-6-6",
+  leaf: "M2 2s8 0 12 6c2 3 2 7 2 7s-4 0-7-2C4 10 2 2 2 2z",
+  plus: "M12 5v14M5 12h14",
+  bed: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10",
+  flower: "M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z",
+  chart: "M18 20V10M12 20V4M6 20v-6",
+  logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9",
+  trash: "M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6",
+  camera: "M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",
+  download: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3",
+  check: "M20 6L9 17l-5-5",
+  arrow: "M5 12h14M12 5l7 7-7 7",
+  eye: "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
+  edit: "M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z",
+};
+
+// ─── CSS ────────────────────────────────────────────────────────────────────
+const css = `
+  :root {
+    --green-deep: #1a3a2a; --green-dark: #2d5a3d; --green-mid: #4a8c5c;
+    --green-light: #7dba8a; --green-pale: #e8f5eb; --green-mist: #f2faf3;
+    --blush: #f5e6e8; --coral: #e07070; --coral-deep: #c85555;
+    --cream: #faf7f2; --gold: #d4a843; --text-dark: #1a2e1f;
+    --text-mid: #4a6352; --text-light: #7a9882; --border: #d4e8d8;
+    --white: #ffffff; --shadow: 0 2px 12px rgba(26,58,42,0.08);
+    --shadow-lg: 0 8px 32px rgba(26,58,42,0.12);
+    --radius: 14px; --radius-sm: 8px;
+  }
+  body { background: var(--green-mist); font-family: 'DM Sans', sans-serif; color: var(--text-dark); }
+  .app { min-height: 100vh; max-width: 480px; margin: 0 auto; background: var(--white); position: relative; }
+
+  /* Auth */
+  .auth-screen {
+    min-height: 100vh;
+    background: linear-gradient(160deg, var(--green-deep) 0%, var(--green-dark) 50%, #1a3520 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 24px;
+  }
+  .auth-title { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--white); text-align: center; line-height: 1.2; margin-bottom: 6px; margin-top: 12px; }
+  .auth-subtitle { font-size: 14px; color: rgba(255,255,255,0.55); text-align: center; margin-bottom: 36px; }
+  .auth-card { background: var(--white); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 380px; box-shadow: var(--shadow-lg); }
+  .auth-tabs { display: flex; background: var(--green-mist); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 22px; }
+  .auth-tab { flex: 1; padding: 8px; text-align: center; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; color: var(--text-mid); border: none; background: none; font-family: 'DM Sans', sans-serif; }
+  .auth-tab.active { background: var(--white); color: var(--green-dark); box-shadow: 0 1px 4px rgba(26,58,42,0.12); }
+
+  /* Forms */
+  .form-group { margin-bottom: 14px; }
+  .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-mid); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-input { width: 100%; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; font-family: 'DM Sans', sans-serif; color: var(--text-dark); background: var(--white); transition: border-color 0.2s; outline: none; }
+  .form-input:focus { border-color: var(--green-mid); }
+  .form-textarea { resize: vertical; min-height: 76px; }
+  .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a6352' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; cursor: pointer; }
+
+  /* Buttons */
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; transition: all 0.18s; width: 100%; }
+  .btn-primary { background: var(--green-dark); color: var(--white); }
+  .btn-primary:hover { background: var(--green-deep); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-secondary { background: var(--green-pale); color: var(--green-dark); }
+  .btn-danger { background: #fde8e8; color: var(--coral-deep); }
+  .btn-sm { padding: 7px 13px; font-size: 13px; width: auto; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Nav */
+  .top-bar { background: var(--green-deep); padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .top-bar-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--white); }
+  .top-bar-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+  .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--white); border-top: 1px solid var(--border); display: flex; padding: 8px 0 max(8px, env(safe-area-inset-bottom)); z-index: 100; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; cursor: pointer; border: none; background: none; color: var(--text-light); transition: color 0.2s; font-family: 'DM Sans', sans-serif; }
+  .nav-item.active { color: var(--green-dark); }
+  .nav-label { font-size: 10px; font-weight: 500; }
+  .content { padding: 16px 20px 100px; }
+
+  /* Cards */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--text-dark); margin-bottom: 4px; }
+  .card-sub { font-size: 13px; color: var(--text-light); }
+  .card-row { display: flex; align-items: center; justify-content: space-between; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .tag-green { background: var(--green-pale); color: var(--green-dark); }
+  .tag-blush { background: var(--blush); color: var(--coral-deep); }
+  .tag-gold { background: #fdf3e0; color: #a07020; }
+
+  /* Sections */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; margin-top: 4px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-dark); }
+  .empty { text-align: center; padding: 48px 24px; color: var(--text-light); }
+  .empty-icon { margin: 0 auto 16px; opacity: 0.3; }
+  .empty-text { font-size: 15px; margin-bottom: 6px; color: var(--text-mid); }
+  .empty-sub { font-size: 13px; }
+
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: linear-gradient(135deg, var(--green-pale), #dff0e2); border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); }
+  .stat-card.accent { background: linear-gradient(135deg, var(--blush), #f8d8da); border-color: #f0c8cc; }
+  .stat-val { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--green-deep); font-weight: 700; }
+  .stat-val.accent { color: var(--coral-deep); }
+  .stat-label { font-size: 11px; color: var(--text-light); margin-top: 2px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* Log form */
+  .log-form { background: var(--green-mist); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .photo-upload { border: 2px dashed var(--border); border-radius: var(--radius-sm); padding: 20px; text-align: center; cursor: pointer; background: var(--white); }
+  .photo-preview { width: 100%; height: 160px; object-fit: cover; border-radius: var(--radius-sm); }
+
+  /* Cut items */
+  .cut-item { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
+  .cut-item-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .cut-variety { font-weight: 600; font-size: 15px; color: var(--text-dark); }
+  .cut-bed { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+  .cut-stems { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--green-dark); font-weight: 700; }
+  .cut-stems-label { font-size: 10px; color: var(--text-light); text-align: right; }
+  .cut-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* Misc */
+  .toast { position: fixed; top: 76px; left: 50%; transform: translateX(-50%); background: var(--green-deep); color: var(--white); padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 500; z-index: 200; box-shadow: var(--shadow-lg); animation: fadeInOut 2.5s forwards; white-space: nowrap; }
+  @keyframes fadeInOut { 0%{opacity:0;transform:translateX(-50%) translateY(-8px)} 15%{opacity:1;transform:translateX(-50%) translateY(0)} 75%{opacity:1} 100%{opacity:0} }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(26,42,32,0.55); z-index: 150; display: flex; align-items: flex-end; justify-content: center; }
+  .modal { background: var(--white); border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; padding: 24px; max-height: 88vh; overflow-y: auto; }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 20px; color: var(--text-dark); }
+  .required-star { color: var(--coral); margin-left: 2px; }
+  .error-msg { font-size: 12px; color: var(--coral-deep); margin-top: 4px; }
+  .auth-error { background: #fde8e8; color: var(--coral-deep); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px; }
+  input[type=file] { display: none; }
+
+  /* Loading */
+  .loading-screen { min-height: 100vh; background: linear-gradient(160deg, var(--green-deep), var(--green-dark)); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+  .spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: rgba(255,255,255,0.6); font-size: 14px; }
+
+  /* Onboarding */
+  .onboard-screen { min-height: 100vh; background: linear-gradient(160deg, var(--green-deep), var(--green-dark)); padding: 40px 24px; display: flex; flex-direction: column; }
+  .onboard-step { flex: 1; display: flex; flex-direction: column; }
+  .onboard-progress { display: flex; gap: 6px; margin-bottom: 32px; }
+  .onboard-dot { height: 4px; flex: 1; border-radius: 2px; background: rgba(255,255,255,0.2); transition: background 0.3s; }
+  .onboard-dot.done { background: rgba(255,255,255,0.8); }
+  .onboard-dot.active { background: white; }
+  .onboard-icon { width: 64px; height: 64px; background: rgba(255,255,255,0.1); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+  .onboard-title { font-family: 'Playfair Display', serif; font-size: 28px; color: white; margin-bottom: 10px; line-height: 1.2; }
+  .onboard-sub { font-size: 15px; color: rgba(255,255,255,0.65); margin-bottom: 32px; line-height: 1.5; }
+  .onboard-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 20px; }
+  .onboard-input { width: 100%; padding: 12px 14px; border: 1.5px solid rgba(255,255,255,0.25); border-radius: var(--radius-sm); font-size: 15px; font-family: 'DM Sans', sans-serif; color: white; background: rgba(255,255,255,0.1); outline: none; }
+  .onboard-input::placeholder { color: rgba(255,255,255,0.4); }
+  .onboard-input:focus { border-color: rgba(255,255,255,0.6); }
+  .onboard-label { display: block; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .onboard-btn { width: 100%; padding: 14px; background: white; color: var(--green-deep); border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; transition: opacity 0.2s; }
+  .onboard-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .onboard-skip { text-align: center; margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.4); cursor: pointer; }
+  .onboard-skip:hover { color: rgba(255,255,255,0.7); }
+
+  /* Sync indicator */
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-light); display: inline-block; margin-right: 5px; }
+  .sync-dot.syncing { background: var(--gold); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Delete bed confirmation */
+  .bed-actions { display: flex; gap: 8px; margin-top: 10px; }
+`;
+
+// ─── App ─────────────────────────────────────────────────────────────────────
+function App() {
+  const [session, setSession] = React.useState(undefined); // undefined=loading
+  const [userData, setUserData] = React.useState({ beds: [], varieties: [], cuts: [] });
+  const [tab, setTab] = React.useState("log");
+  const [toast, setToast] = React.useState(null);
+  const [modal, setModal] = React.useState(null);
+  const [syncing, setSyncing] = React.useState(false);
+  const [onboardStep, setOnboardStep] = React.useState(null); // null = not onboarding
+
+  const [authMode, setAuthMode] = React.useState("login");
+  const [authEmail, setAuthEmail] = React.useState("");
+  const [authPassword, setAuthPassword] = React.useState("");
+  const [authName, setAuthName] = React.useState("");
+  const [authError, setAuthError] = React.useState("");
+  const [authLoading, setAuthLoading] = React.useState(false);
+
+  const [logForm, setLogForm] = React.useState({ bedId:"", varietyId:"", stems:"", length:"", price:"", quality:"", notes:"", photo:"" });
+  const [bedForm, setBedForm] = React.useState({ name:"", notes:"" });
+  const [varForm, setVarForm] = React.useState({ name:"", bedId:"", colour:"", notes:"" });
+  const [logErrors, setLogErrors] = React.useState({});
+  const [summaryView, setSummaryView] = React.useState("variety");
+  const [onboardBedName, setOnboardBedName] = React.useState("");
+  const [onboardBedNotes, setOnboardBedNotes] = React.useState("");
+  const [onboardVarName, setOnboardVarName] = React.useState("");
+  const [onboardVarColour, setOnboardVarColour] = React.useState("");
+  const [onboardSaving, setOnboardSaving] = React.useState(false);
+
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 2600); };
+
+  // ── Auth listener ──
+  React.useEffect(() => {
+    sb.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) loadAllData(session.user.id);
+    });
+    const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) loadAllData(session.user.id);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const loadAllData = async (userId) => {
+    setSyncing(true);
+    const [bedsRes, varsRes, cutsRes] = await Promise.all([
+      sb.from("beds").select("*").eq("user_id", userId).order("created_at"),
+      sb.from("varieties").select("*").eq("user_id", userId).order("created_at"),
+      sb.from("cuts").select("*").eq("user_id", userId).order("cut_at", { ascending: false }),
+    ]);
+    const beds = bedsRes.data || [];
+    const varieties = varsRes.data || [];
+    const cuts = cutsRes.data || [];
+    setUserData({ beds, varieties, cuts });
+    setSyncing(false);
+    // Show onboarding if brand new user
+    if (beds.length === 0) setOnboardStep(1);
+  };
+
+  // ── Auth ──
+  const handleAuth = async () => {
+    setAuthError("");
+    if (!authEmail || !authPassword) { setAuthError("Please enter email and password."); return; }
+    if (authMode === "signup" && !authName) { setAuthError("Please enter your name."); return; }
+    setAuthLoading(true);
+    if (authMode === "signup") {
+      const { error } = await sb.auth.signUp({
+        email: authEmail, password: authPassword,
+        options: { data: { full_name: authName } }
+      });
+      if (error) { setAuthError(error.message); setAuthLoading(false); return; }
+    } else {
+      const { error } = await sb.auth.signInWithPassword({ email: authEmail, password: authPassword });
+      if (error) { setAuthError("Incorrect email or password."); setAuthLoading(false); return; }
+    }
+    setAuthLoading(false);
+  };
+
+  const handleLogout = () => sb.auth.signOut();
+
+  // ── Onboarding ──
+  const handleOnboardBed = async () => {
+    if (!onboardBedName.trim()) return;
+    setOnboardSaving(true);
+    const { data, error } = await sb.from("beds").insert({
+      user_id: session.user.id, name: onboardBedName.trim(), notes: onboardBedNotes.trim() || null
+    }).select().single();
+    if (!error) {
+      setUserData(d => ({ ...d, beds: [...d.beds, data] }));
+      setOnboardStep(2);
+    }
+    setOnboardSaving(false);
+  };
+
+  const handleOnboardVariety = async () => {
+    if (!onboardVarName.trim()) return;
+    setOnboardSaving(true);
+    const bed = userData.beds[userData.beds.length - 1];
+    const { data, error } = await sb.from("varieties").insert({
+      user_id: session.user.id, bed_id: bed.id, name: onboardVarName.trim(), colour: onboardVarColour.trim() || null
+    }).select().single();
+    if (!error) {
+      setUserData(d => ({ ...d, varieties: [...d.varieties, data] }));
+      setOnboardStep(3);
+    }
+    setOnboardSaving(false);
+  };
+
+  const finishOnboarding = () => {
+    setOnboardStep(null);
+    showToast("Welcome! You're ready to log cuts 🌿");
+  };
+
+  // ── Data mutations ──
+  const handleAddBed = async () => {
+    if (!bedForm.name) return;
+    setSyncing(true);
+    const { data, error } = await sb.from("beds").insert({
+      user_id: session.user.id, name: bedForm.name, notes: bedForm.notes || null
+    }).select().single();
+    if (!error) {
+      setUserData(d => ({ ...d, beds: [...d.beds, data] }));
+      setBedForm({ name:"", notes:"" });
+      setModal(null);
+      showToast("Bed added ✓");
+    }
+    setSyncing(false);
+  };
+
+  const handleDeleteBed = async (bedId) => {
+    if (!window.confirm("Delete this bed and all its varieties? Existing cut logs will be kept.")) return;
+    setSyncing(true);
+    await sb.from("varieties").delete().eq("bed_id", bedId);
+    await sb.from("beds").delete().eq("id", bedId);
+    setUserData(d => ({
+      ...d,
+      beds: d.beds.filter(b => b.id !== bedId),
+      varieties: d.varieties.filter(v => v.bed_id !== bedId)
+    }));
+    setSyncing(false);
+    showToast("Bed removed");
+  };
+
+  const handleAddVariety = async () => {
+    if (!varForm.name || !varForm.bedId) return;
+    setSyncing(true);
+    const { data, error } = await sb.from("varieties").insert({
+      user_id: session.user.id, bed_id: varForm.bedId, name: varForm.name,
+      colour: varForm.colour || null, notes: varForm.notes || null
+    }).select().single();
+    if (!error) {
+      setUserData(d => ({ ...d, varieties: [...d.varieties, data] }));
+      setVarForm({ name:"", bedId:"", colour:"", notes:"" });
+      setModal(null);
+      showToast("Variety added ✓");
+    }
+    setSyncing(false);
+  };
+
+  const handleDeleteVariety = async (varId) => {
+    if (!window.confirm("Remove this variety?")) return;
+    await sb.from("varieties").delete().eq("id", varId);
+    setUserData(d => ({ ...d, varieties: d.varieties.filter(v => v.id !== varId) }));
+    showToast("Variety removed");
+  };
+
+  const handleLogCut = async () => {
+    const errors = {};
+    if (!logForm.bedId) errors.bedId = "Required";
+    if (!logForm.varietyId) errors.varietyId = "Required";
+    if (!logForm.stems || isNaN(logForm.stems) || Number(logForm.stems) < 1) errors.stems = "Required — enter number of stems";
+    setLogErrors(errors);
+    if (Object.keys(errors).length) return;
+    const bed = userData.beds.find(b => b.id === logForm.bedId);
+    const variety = userData.varieties.find(v => v.id === logForm.varietyId);
+    setSyncing(true);
+    const { data, error } = await sb.from("cuts").insert({
+      user_id: session.user.id,
+      bed_id: logForm.bedId, bed_name: bed?.name || "",
+      variety_id: logForm.varietyId, variety_name: variety?.name || "",
+      stems: Number(logForm.stems),
+      length_cm: logForm.length ? Number(logForm.length) : null,
+      price_per_stem: logForm.price ? Number(logForm.price) : null,
+      quality: logForm.quality || null, notes: logForm.notes || null,
+      photo: logForm.photo || null,
+      cut_at: new Date().toISOString(),
+    }).select().single();
+    if (!error) {
+      setUserData(d => ({ ...d, cuts: [data, ...d.cuts] }));
+      setLogForm({ bedId:"", varietyId:"", stems:"", length:"", price:"", quality:"", notes:"", photo:"" });
+      setLogErrors({});
+      showToast("Cut logged ✓");
+      setTab("cuts");
+    }
+    setSyncing(false);
+  };
+
+  const handlePhoto = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setLogForm(f => ({ ...f, photo: ev.target.result }));
+    reader.readAsDataURL(file);
+  };
+
+  const handleDeleteCut = async (cutId) => {
+    if (!window.confirm("Delete this entry?")) return;
+    await sb.from("cuts").delete().eq("id", cutId);
+    setUserData(d => ({ ...d, cuts: d.cuts.filter(c => c.id !== cutId) }));
+    showToast("Deleted");
+  };
+
+  const handleExport = () => {
+    if (!userData?.cuts?.length) return;
+    const headers = ["Date","Bed","Variety","Stems","Length (cm)","Price (£)","Quality","Notes"];
+    const rows = userData.cuts.map(c => [
+      new Date(c.cut_at).toLocaleDateString("en-GB"), c.bed_name, c.variety_name,
+      c.stems, c.length_cm||"", c.price_per_stem||"", c.quality||"", c.notes||""
+    ]);
+    const csv = [headers,...rows].map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type:"text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href=url; a.download="flower_cuts.csv"; a.click();
+    showToast("CSV downloaded ✓");
+  };
+
+  const totalStems = userData?.cuts?.reduce((s,c) => s+c.stems, 0) || 0;
+  const totalRevenue = userData?.cuts?.reduce((s,c) => s+(c.stems*(c.price_per_stem||0)), 0) || 0;
+  const filteredVarieties = userData?.varieties?.filter(v => v.bed_id === logForm.bedId) || [];
+  const displayName = session?.user?.user_metadata?.full_name || session?.user?.email?.split("@")[0] || "Grower";
+
+  // ── Loading ──
+  if (session === undefined) return React.createElement(React.Fragment, null,
+    React.createElement('style', null, css),
+    React.createElement('div', { className: "loading-screen" },
+      React.createElement('div', { className: "spinner" }),
+      React.createElement('div', { className: "loading-text" }, "Loading your garden...")
+    )
+  );
+
+  // ── Auth screen ──
+  if (!session) return React.createElement(React.Fragment, null,
+    React.createElement('style', null, css),
+    React.createElement('div', { className: "auth-screen" },
+      React.createElement(Icon, { d: icons.flower, size: 48, color: "rgba(255,255,255,0.65)", strokeWidth: 1.2 }),
+      React.createElement('h1', { className: "auth-title" }, "Flower Cut Log"),
+      React.createElement('p', { className: "auth-subtitle" }, "Track every stem, every season"),
+      React.createElement('div', { className: "auth-card" },
+        React.createElement('div', { className: "auth-tabs" },
+          React.createElement('button', { className: `auth-tab ${authMode==="login"?"active":""}`, onClick: ()=>{ setAuthMode("login"); setAuthError(""); } }, "Sign In"),
+          React.createElement('button', { className: `auth-tab ${authMode==="signup"?"active":""}`, onClick: ()=>{ setAuthMode("signup"); setAuthError(""); } }, "Create Account")
+        ),
+        authError && React.createElement('div', { className: "auth-error" }, authError),
+        authMode === "signup" && React.createElement('div', { className: "form-group" },
+          React.createElement('label', { className: "form-label" }, "Your Name"),
+          React.createElement('input', { className: "form-input", placeholder: "e.g. Jen", value: authName, onChange: e=>setAuthName(e.target.value) })
+        ),
+        React.createElement('div', { className: "form-group" },
+          React.createElement('label', { className: "form-label" }, "Email"),
+          React.createElement('input', { className: "form-input", type: "email", placeholder: "you@example.com", value: authEmail, onChange: e=>setAuthEmail(e.target.value) })
+        ),
+        React.createElement('div', { className: "form-group" },
+          React.createElement('label', { className: "form-label" }, "Password"),
+          React.createElement('input', { className: "form-input", type: "password", placeholder: "••••••••", value: authPassword, onChange: e=>setAuthPassword(e.target.value), onKeyDown: e=>e.key==="Enter"&&handleAuth() })
+        ),
+        authMode === "signup" && React.createElement('p', { style:{fontSize:12, color:"var(--text-light)", marginBottom:12} }, "Your data is stored securely in the cloud — access it from any device."),
+        React.createElement('button', { className: "btn btn-primary", onClick: handleAuth, disabled: authLoading },
+          authLoading ? "Please wait..." : authMode==="login" ? "Sign In" : "Create Account"
+        )
+      )
+    )
+  );
+
+  // ── Onboarding ──
+  if (onboardStep !== null) {
+    const steps = [
+      { num: 1, title: "First, set up a bed", sub: "A bed is a growing area on your plot — it could be a raised bed, a row, or a section. You can add more later.", icon: icons.bed, content: () =>
+        React.createElement('div', { className: "onboard-card" },
+          React.createElement('div', { className: "form-group" },
+            React.createElement('label', { className: "onboard-label" }, "Bed name *"),
+            React.createElement('input', { className: "onboard-input", placeholder: "e.g. Main cut bed, Ranunculus row", value: onboardBedName, onChange: e=>setOnboardBedName(e.target.value) })
+          ),
+          React.createElement('div', { className: "form-group", style:{marginBottom:0} },
+            React.createElement('label', { className: "onboard-label" }, "Location / notes (optional)"),
+            React.createElement('input', { className: "onboard-input", placeholder: "e.g. South facing, Plot 1", value: onboardBedNotes, onChange: e=>setOnboardBedNotes(e.target.value) })
+          ),
+          React.createElement('button', { className: "onboard-btn", onClick: handleOnboardBed, disabled: !onboardBedName.trim() || onboardSaving },
+            onboardSaving ? "Saving..." : React.createElement(React.Fragment, null, "Next ", React.createElement(Icon, { d: icons.arrow, size: 18, color: "var(--green-deep)" }))
+          )
+        )
+      },
+      { num: 2, title: "Add your first variety", sub: `Great! Now add a variety growing in "${userData.beds[userData.beds.length-1]?.name || "your bed"}". You can add more varieties any time.`, icon: icons.flower, content: () =>
+        React.createElement('div', { className: "onboard-card" },
+          React.createElement('div', { className: "form-group" },
+            React.createElement('label', { className: "onboard-label" }, "Variety name *"),
+            React.createElement('input', { className: "onboard-input", placeholder: "e.g. Sweet Pea Mollie Rilstone", value: onboardVarName, onChange: e=>setOnboardVarName(e.target.value) })
+          ),
+          React.createElement('div', { className: "form-group", style:{marginBottom:0} },
+            React.createElement('label', { className: "onboard-label" }, "Colour / description (optional)"),
+            React.createElement('input', { className: "onboard-input", placeholder: "e.g. Cream apricot", value: onboardVarColour, onChange: e=>setOnboardVarColour(e.target.value) })
+          ),
+          React.createElement('button', { className: "onboard-btn", onClick: handleOnboardVariety, disabled: !onboardVarName.trim() || onboardSaving },
+            onboardSaving ? "Saving..." : React.createElement(React.Fragment, null, "Next ", React.createElement(Icon, { d: icons.arrow, size: 18, color: "var(--green-deep)" }))
+          ),
+          React.createElement('div', { className: "onboard-skip", onClick: () => setOnboardStep(3) }, "Skip for now")
+        )
+      },
+      { num: 3, title: "You're all set!", sub: "Your plot is set up. Head to Log Cut to record your first harvest — just select bed, variety and number of stems.", icon: icons.check, content: () =>
+        React.createElement('div', null,
+          userData.beds.length > 0 && React.createElement('div', { className: "onboard-card", style:{marginBottom:12} },
+            React.createElement('div', { style:{fontSize:13, color:"rgba(255,255,255,0.6)", marginBottom:8} }, "YOUR SETUP"),
+            userData.beds.map(b => {
+              const vars = userData.varieties.filter(v => v.bed_id === b.id);
+              return React.createElement('div', { key: b.id, style:{marginBottom:6} },
+                React.createElement('div', { style:{color:"white", fontWeight:600, fontSize:15} }, b.name),
+                vars.length > 0 && React.createElement('div', { style:{fontSize:13, color:"rgba(255,255,255,0.5)", marginTop:2} }, vars.map(v=>v.name).join(", "))
+              );
+            })
+          ),
+          React.createElement('button', { className: "onboard-btn", onClick: finishOnboarding },
+            React.createElement(Icon, { d: icons.scissors, size: 18, color: "var(--green-deep)" }), " Start logging cuts"
+          )
+        )
+      },
+    ];
+    const step = steps.find(s => s.num === onboardStep);
+    return React.createElement(React.Fragment, null,
+      React.createElement('style', null, css),
+      React.createElement('div', { className: "onboard-screen" },
+        React.createElement('div', { className: "onboard-progress" },
+          steps.map(s => React.createElement('div', { key: s.num, className: `onboard-dot ${s.num < onboardStep ? "done" : s.num === onboardStep ? "active" : ""}` }))
+        ),
+        React.createElement('div', { className: "onboard-icon" },
+          React.createElement(Icon, { d: step.icon, size: 32, color: "white", strokeWidth: 1.5 })
+        ),
+        React.createElement('div', { className: "onboard-title" }, step.title),
+        React.createElement('div', { className: "onboard-sub" }, step.sub),
+        step.content()
+      )
+    );
+  }
+
+  // ── Main app ──
+  return React.createElement(React.Fragment, null,
+    React.createElement('style', null, css),
+    React.createElement('div', { className: "app" },
+
+      React.createElement('div', { className: "top-bar" },
+        React.createElement('div', null,
+          React.createElement('div', { className: "top-bar-title" }, "🌿 Cut Log"),
+          React.createElement('div', { className: "top-bar-sub" },
+            React.createElement('span', { className: `sync-dot ${syncing ? "syncing" : ""}` }),
+            syncing ? "Syncing..." : displayName
+          )
+        ),
+        React.createElement('button', { className: "btn btn-sm", style: { background:"rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.8)", width:"auto" }, onClick: handleLogout },
+          React.createElement(Icon, { d: icons.logout, size: 14 }), " Out"
+        )
+      ),
+
+      toast && React.createElement('div', { className: "toast" }, toast),
+
+      React.createElement('div', { className: "content" },
+
+        // ── LOG CUT ──
+        tab === "log" && React.createElement(React.Fragment, null,
+          React.createElement('div', { className: "section-header", style:{marginTop:8} },
+            React.createElement('div', { className: "section-title" }, "Log a Cut")
+          ),
+          React.createElement('div', { className: "log-form" },
+            userData.beds.length === 0
+              ? React.createElement('div', { className: "empty" },
+                  React.createElement('div', { className: "empty-icon" }, React.createElement(Icon, { d: icons.bed, size: 40 })),
+                  React.createElement('div', { className: "empty-text" }, "No beds set up yet"),
+                  React.createElement('div', { className: "empty-sub", style:{marginBottom:16} }, "Add your beds first"),
+                  React.createElement('button', { className: "btn btn-primary", style:{maxWidth:200, margin:"0 auto"}, onClick:()=>setTab("beds") },
+                    React.createElement(Icon, { d:icons.plus, size:15, color:"white" }), " Set up beds"
+                  )
+                )
+              : React.createElement(React.Fragment, null,
+                  // Bed
+                  React.createElement('div', { className: "form-group" },
+                    React.createElement('label', { className: "form-label" }, "Bed ", React.createElement('span', { className: "required-star" }, "*")),
+                    React.createElement('select', { className: "form-input form-select", value: logForm.bedId, onChange: e=>setLogForm(f=>({...f, bedId:e.target.value, varietyId:""})) },
+                      React.createElement('option', { value:"" }, "Select bed..."),
+                      userData.beds.map(b => React.createElement('option', { key:b.id, value:b.id }, b.name))
+                    ),
+                    logErrors.bedId && React.createElement('div', { className: "error-msg" }, logErrors.bedId)
+                  ),
+                  // Variety
+                  React.createElement('div', { className: "form-group" },
+                    React.createElement('label', { className: "form-label" }, "Variety ", React.createElement('span', { className: "required-star" }, "*")),
+                    React.createElement('select', { className: "form-input form-select", value: logForm.varietyId, onChange: e=>setLogForm(f=>({...f, varietyId:e.target.value})), disabled: !logForm.bedId },
+                      React.createElement('option', { value:"" }, logForm.bedId ? (filteredVarieties.length === 0 ? "No varieties — add one below" : "Select variety...") : "Select bed first"),
+                      filteredVarieties.map(v => React.createElement('option', { key:v.id, value:v.id }, v.name))
+                    ),
+                    logErrors.varietyId && React.createElement('div', { className: "error-msg" }, logErrors.varietyId),
+                    logForm.bedId && React.createElement('button', { className: "btn btn-secondary btn-sm", style:{marginTop:8}, onClick:()=>{ setVarForm(f=>({...f, bedId:logForm.bedId})); setModal("addVariety"); } },
+                      React.createElement(Icon, { d: icons.plus, size: 13 }), " Add new variety"
+                    )
+                  ),
+                  // Stems
+                  React.createElement('div', { className: "form-group" },
+                    React.createElement('label', { className: "form-label" }, "Stems Cut ", React.createElement('span', { className: "required-star" }, "*")),
+                    React.createElement('input', { className: "form-input", type:"number", min:"1", placeholder:"e.g. 25", value:logForm.stems, onChange:e=>setLogForm(f=>({...f, stems:e.target.value})) }),
+                    logErrors.stems && React.createElement('div', { className: "error-msg" }, logErrors.stems)
+                  ),
+                  // Length + Price
+                  React.createElement('div', { style:{display:"grid", gridTemplateColumns:"1fr 1fr", gap:10} },
+                    React.createElement('div', { className: "form-group" },
+                      React.createElement('label', { className: "form-label" }, "Length (cm)"),
+                      React.createElement('input', { className: "form-input", type:"number", min:"0", placeholder:"e.g. 40", value:logForm.length, onChange:e=>setLogForm(f=>({...f, length:e.target.value})) })
+                    ),
+                    React.createElement('div', { className: "form-group" },
+                      React.createElement('label', { className: "form-label" }, "Price/stem (£)"),
+                      React.createElement('input', { className: "form-input", type:"number", min:"0", step:"0.05", placeholder:"0.75", value:logForm.price, onChange:e=>setLogForm(f=>({...f, price:e.target.value})) })
+                    )
+                  ),
+                  // Quality
+                  React.createElement('div', { className: "form-group" },
+                    React.createElement('label', { className: "form-label" }, "Quality"),
+                    React.createElement('select', { className: "form-input form-select", value:logForm.quality, onChange:e=>setLogForm(f=>({...f, quality:e.target.value})) },
+                      React.createElement('option', { value:"" }, "Select..."),
+                      ["Excellent","Good","Fair","Poor"].map(q => React.createElement('option', { key:q, value:q }, q))
+                    )
+                  ),
+                  // Notes
+                  React.createElement('div', { className: "form-group" },
+                    React.createElement('label', { className: "form-label" }, "Notes"),
+                    React.createElement('textarea', { className: "form-input form-textarea", placeholder:"Observations, market feedback...", value:logForm.notes, onChange:e=>setLogForm(f=>({...f, notes:e.target.value})) })
+                  ),
+                  // Photo
+                  React.createElement('div', { className: "form-group" },
+                    React.createElement('label', { className: "form-label" }, "Photo"),
+                    React.createElement('label', { className: "photo-upload", htmlFor:"photo-input" },
+                      logForm.photo
+                        ? React.createElement('img', { src:logForm.photo, alt:"", className:"photo-preview" })
+                        : React.createElement(React.Fragment, null,
+                            React.createElement(Icon, { d:icons.camera, size:28, color:"var(--text-light)" }),
+                            React.createElement('div', { style:{fontSize:13, color:"var(--text-light)", marginTop:8} }, "Tap to add photo")
+                          )
+                    ),
+                    React.createElement('input', { id:"photo-input", type:"file", accept:"image/*", capture:"environment", onChange:handlePhoto })
+                  ),
+                  React.createElement('button', { className: "btn btn-primary", onClick: handleLogCut, disabled: syncing },
+                    React.createElement(Icon, { d:icons.scissors, size:17, color:"white" }), syncing ? " Saving..." : " Record Cut"
+                  )
+                )
+          )
+        ),
+
+        // ── CUT HISTORY ──
+        tab === "cuts" && React.createElement(React.Fragment, null,
+          React.createElement('div', { className: "section-header", style:{marginTop:8} },
+            React.createElement('div', { className: "section-title" }, "Cut History"),
+            userData.cuts.length > 0 && React.createElement('button', { className: "btn btn-secondary btn-sm", onClick: handleExport },
+              React.createElement(Icon, { d:icons.download, size:14 }), " CSV"
+            )
+          ),
+          userData.cuts.length === 0
+            ? React.createElement('div', { className: "empty" },
+                React.createElement('div', { className: "empty-icon" }, React.createElement(Icon, { d:icons.scissors, size:40 })),
+                React.createElement('div', { className: "empty-text" }, "No cuts logged yet"),
+                React.createElement('div', { className: "empty-sub" }, "Head to Log Cut to record your first harvest")
+              )
+            : userData.cuts.map(cut =>
+                React.createElement('div', { key:cut.id, className: "cut-item" },
+                  cut.photo && React.createElement('img', { src:cut.photo, alt:"", style:{width:"100%", height:130, objectFit:"cover", borderRadius:8, marginBottom:10} }),
+                  React.createElement('div', { className: "cut-item-top" },
+                    React.createElement('div', null,
+                      React.createElement('div', { className: "cut-variety" }, cut.variety_name),
+                      React.createElement('div', { className: "cut-bed" }, cut.bed_name)
+                    ),
+                    React.createElement('div', { style:{textAlign:"right"} },
+                      React.createElement('div', { className: "cut-stems" }, cut.stems),
+                      React.createElement('div', { className: "cut-stems-label" }, "stems")
+                    )
+                  ),
+                  React.createElement('div', { className: "cut-meta" },
+                    React.createElement('span', { style:{fontSize:12, color:"var(--text-light)"} }, new Date(cut.cut_at).toLocaleDateString("en-GB", {day:"numeric", month:"short", year:"numeric"})),
+                    cut.length_cm && React.createElement('span', { className: "tag tag-green" }, cut.length_cm+"cm"),
+                    cut.price_per_stem && React.createElement('span', { className: "tag tag-gold" }, "£"+Number(cut.price_per_stem).toFixed(2)+"/stem"),
+                    cut.quality && React.createElement('span', { className: "tag tag-blush" }, cut.quality)
+                  ),
+                  cut.notes && React.createElement('div', { style:{fontSize:13, color:"var(--text-mid)", marginTop:8, fontStyle:"italic"} }, cut.notes),
+                  React.createElement('div', { style:{marginTop:10, display:"flex", justifyContent:"flex-end"} },
+                    React.createElement('button', { className: "btn btn-danger btn-sm", onClick:()=>handleDeleteCut(cut.id) },
+                      React.createElement(Icon, { d:icons.trash, size:13 }), " Delete"
+                    )
+                  )
+                )
+              )
+        ),
+
+        // ── BEDS ──
+        tab === "beds" && React.createElement(React.Fragment, null,
+          React.createElement('div', { className: "section-header", style:{marginTop:8} },
+            React.createElement('div', { className: "section-title" }, "Beds & Varieties"),
+            React.createElement('button', { className: "btn btn-primary btn-sm", onClick:()=>setModal("addBed") },
+              React.createElement(Icon, { d:icons.plus, size:15 }), " Add Bed"
+            )
+          ),
+          userData.beds.length === 0
+            ? React.createElement('div', { className: "empty" },
+                React.createElement('div', { className: "empty-icon" }, React.createElement(Icon, { d:icons.bed, size:40 })),
+                React.createElement('div', { className: "empty-text" }, "No beds yet"),
+                React.createElement('div', { className: "empty-sub" }, "Add your growing beds or areas")
+              )
+            : userData.beds.map(bed => {
+                const vars = userData.varieties.filter(v => v.bed_id === bed.id);
+                return React.createElement('div', { key:bed.id, className: "card" },
+                  React.createElement('div', { className: "card-row", style:{marginBottom:8} },
+                    React.createElement('div', null,
+                      React.createElement('div', { className: "card-title" }, bed.name),
+                      bed.notes && React.createElement('div', { className: "card-sub" }, bed.notes)
+                    ),
+                    React.createElement('span', { className: "tag tag-green" }, vars.length+" variet"+(vars.length===1?"y":"ies"))
+                  ),
+                  vars.length > 0 && React.createElement('div', { style:{marginBottom:10} },
+                    vars.map(v => React.createElement('div', { key:v.id, style:{display:"flex", alignItems:"center", justifyContent:"space-between", padding:"5px 0", borderBottom:"1px solid var(--green-mist)"} },
+                      React.createElement('span', { style:{fontSize:13, color:"var(--text-dark)"} },
+                        v.name, v.colour && React.createElement('span', { style:{color:"var(--text-light)", marginLeft:6, fontSize:12} }, v.colour)
+                      ),
+                      React.createElement('button', { onClick:()=>handleDeleteVariety(v.id), style:{background:"none", border:"none", cursor:"pointer", color:"var(--text-light)", padding:"2px 4px"} },
+                        React.createElement(Icon, { d:icons.trash, size:13 })
+                      )
+                    ))
+                  ),
+                  React.createElement('div', { className: "bed-actions" },
+                    React.createElement('button', { className: "btn btn-secondary btn-sm", style:{flex:1}, onClick:()=>{ setVarForm(f=>({...f, bedId:bed.id})); setModal("addVariety"); } },
+                      React.createElement(Icon, { d:icons.plus, size:13 }), " Add variety"
+                    ),
+                    React.createElement('button', { className: "btn btn-danger btn-sm", onClick:()=>handleDeleteBed(bed.id) },
+                      React.createElement(Icon, { d:icons.trash, size:13 })
+                    )
+                  )
+                );
+              })
+        ),
+
+        // ── SUMMARY ──
+        tab === "summary" && React.createElement(React.Fragment, null,
+          React.createElement('div', { className: "section-header", style:{marginTop:8} },
+            React.createElement('div', { className: "section-title" }, "Summary"),
+            userData.cuts.length > 0 && React.createElement('button', { className: "btn btn-secondary btn-sm", onClick: handleExport },
+              React.createElement(Icon, { d:icons.download, size:14 }), " CSV"
+            )
+          ),
+          React.createElement('div', { className: "stats-grid" },
+            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, totalStems.toLocaleString()), React.createElement('div', { className: "stat-label" }, "Total Stems")),
+            React.createElement('div', { className: "stat-card accent" }, React.createElement('div', { className: "stat-val accent" }, "£"+totalRevenue.toFixed(0)), React.createElement('div', { className: "stat-label" }, "Est. Revenue")),
+            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, userData.cuts.length), React.createElement('div', { className: "stat-label" }, "Cuts Logged")),
+            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, userData.beds.length), React.createElement('div', { className: "stat-label" }, "Active Beds"))
+          ),
+          userData.cuts.length === 0
+            ? React.createElement('div', { className: "empty" },
+                React.createElement('div', { className: "empty-icon" }, React.createElement(Icon, { d:icons.chart, size:40 })),
+                React.createElement('div', { className: "empty-text" }, "No data yet"),
+                React.createElement('div', { className: "empty-sub" }, "Start logging cuts to see your summary")
+              )
+            : React.createElement(React.Fragment, null,
+                React.createElement('div', { style:{display:"flex", background:"var(--green-mist)", borderRadius:"var(--radius-sm)", padding:3, marginBottom:14} },
+                  [{ id:"variety", label:"Variety" },{ id:"bed", label:"Bed" },{ id:"week", label:"Week" },{ id:"month", label:"Month" }].map(v =>
+                    React.createElement('button', {
+                      key: v.id, onClick: ()=>setSummaryView(v.id),
+                      style:{ flex:1, padding:"7px 4px", border:"none", borderRadius:6, fontSize:12, fontWeight:600, fontFamily:"DM Sans, sans-serif", cursor:"pointer", transition:"all 0.2s",
+                        background: summaryView===v.id ? "var(--white)" : "transparent",
+                        color: summaryView===v.id ? "var(--green-dark)" : "var(--text-light)",
+                        boxShadow: summaryView===v.id ? "0 1px 4px rgba(26,58,42,0.12)" : "none" }
+                    }, v.label)
+                  )
+                ),
+                summaryView === "variety" && React.createElement('div', { className: "card" },
+                  React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Variety"),
+                  Object.entries(userData.cuts.reduce((acc,c) => { acc[c.variety_name]=(acc[c.variety_name]||0)+c.stems; return acc; }, {}))
+                    .sort((a,b) => b[1]-a[1])
+                    .map(([name, count]) => {
+                      const rev = userData.cuts.filter(c=>c.variety_name===name).reduce((s,c)=>s+(c.stems*(c.price_per_stem||0)),0);
+                      return React.createElement('div', { key:name, style:{padding:"10px 0", borderBottom:"1px solid var(--border)"} },
+                        React.createElement('div', { style:{display:"flex", justifyContent:"space-between", alignItems:"center"} },
+                          React.createElement('span', { style:{fontSize:14, color:"var(--text-dark)", fontWeight:500} }, name),
+                          React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:20, fontWeight:700, color:"var(--green-dark)"} }, count)
+                        ),
+                        rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "£"+rev.toFixed(2)+" est. revenue")
+                      );
+                    })
+                ),
+                summaryView === "bed" && React.createElement('div', { className: "card" },
+                  React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Bed"),
+                  (() => {
+                    const byCut = userData.cuts.reduce((acc,c) => { acc[c.bed_name]=(acc[c.bed_name]||0)+c.stems; return acc; }, {});
+                    return Object.entries(byCut).sort((a,b)=>b[1]-a[1]).map(([name, count]) => {
+                      const rev = userData.cuts.filter(c=>c.bed_name===name).reduce((s,c)=>s+(c.stems*(c.price_per_stem||0)),0);
+                      const vars = [...new Set(userData.cuts.filter(c=>c.bed_name===name).map(c=>c.variety_name))];
+                      return React.createElement('div', { key:name, style:{padding:"10px 0", borderBottom:"1px solid var(--border)"} },
+                        React.createElement('div', { style:{display:"flex", justifyContent:"space-between", alignItems:"center"} },
+                          React.createElement('span', { style:{fontSize:14, color:"var(--text-dark)", fontWeight:500} }, name),
+                          React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:20, fontWeight:700, color:"var(--green-dark)"} }, count)
+                        ),
+                        React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} },
+                          vars.length+" variet"+(vars.length===1?"y":"ies")+(rev>0?" · £"+rev.toFixed(2)+" est.":"")
+                        )
+                      );
+                    });
+                  })()
+                ),
+                summaryView === "week" && React.createElement('div', { className: "card" },
+                  React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Week"),
+                  (() => {
+                    const getWeekKey = (dateStr) => {
+                      const d = new Date(dateStr); const day = d.getDay() || 7;
+                      const mon = new Date(d); mon.setDate(d.getDate()-day+1);
+                      return mon.toLocaleDateString("en-GB", {day:"numeric", month:"short"});
+                    };
+                    const byWeek = userData.cuts.reduce((acc,c) => {
+                      const k = getWeekKey(c.cut_at);
+                      if (!acc[k]) acc[k] = { stems:0, rev:0, date: new Date(c.cut_at) };
+                      acc[k].stems += c.stems; acc[k].rev += c.stems*(c.price_per_stem||0);
+                      return acc;
+                    }, {});
+                    return Object.entries(byWeek).sort((a,b)=>b[1].date-a[1].date).map(([week, data]) =>
+                      React.createElement('div', { key:week, style:{padding:"10px 0", borderBottom:"1px solid var(--border)"} },
+                        React.createElement('div', { style:{display:"flex", justifyContent:"space-between", alignItems:"center"} },
+                          React.createElement('span', { style:{fontSize:13, color:"var(--text-mid)", fontWeight:500} }, "w/c "+week),
+                          React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:20, fontWeight:700, color:"var(--green-dark)"} }, data.stems)
+                        ),
+                        data.rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "£"+data.rev.toFixed(2)+" est. revenue")
+                      )
+                    );
+                  })()
+                ),
+                summaryView === "month" && React.createElement('div', { className: "card" },
+                  React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Month"),
+                  (() => {
+                    const byMonth = userData.cuts.reduce((acc,c) => {
+                      const k = new Date(c.cut_at).toLocaleDateString("en-GB", {month:"long", year:"numeric"});
+                      const sortKey = new Date(c.cut_at).getFullYear()*100 + new Date(c.cut_at).getMonth();
+                      if (!acc[k]) acc[k] = { stems:0, rev:0, sort:sortKey };
+                      acc[k].stems += c.stems; acc[k].rev += c.stems*(c.price_per_stem||0);
+                      return acc;
+                    }, {});
+                    return Object.entries(byMonth).sort((a,b)=>b[1].sort-a[1].sort).map(([month, data]) =>
+                      React.createElement('div', { key:month, style:{padding:"10px 0", borderBottom:"1px solid var(--border)"} },
+                        React.createElement('div', { style:{display:"flex", justifyContent:"space-between", alignItems:"center"} },
+                          React.createElement('span', { style:{fontSize:14, color:"var(--text-dark)", fontWeight:500} }, month),
+                          React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:20, fontWeight:700, color:"var(--green-dark)"} }, data.stems)
+                        ),
+                        data.rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "£"+data.rev.toFixed(2)+" est. revenue")
+                      )
+                    );
+                  })()
+                )
+              )
+        )
+      ),
+
+      // ── Bottom nav ──
+      React.createElement('div', { className: "bottom-nav" },
+        [
+          { id:"log", icon:icons.scissors, label:"Log Cut" },
+          { id:"cuts", icon:icons.leaf, label:"History" },
+          { id:"beds", icon:icons.bed, label:"Beds" },
+          { id:"summary", icon:icons.chart, label:"Summary" },
+        ].map(n =>
+          React.createElement('button', { key:n.id, className:`nav-item ${tab===n.id?"active":""}`, onClick:()=>setTab(n.id) },
+            React.createElement(Icon, { d:n.icon, size:22 }),
+            React.createElement('span', { className:"nav-label" }, n.label)
+          )
+        )
+      ),
+
+      // ── Modal: Add Bed ──
+      modal === "addBed" && React.createElement('div', { className:"modal-overlay", onClick:e=>{ if(e.target===e.currentTarget) setModal(null); } },
+        React.createElement('div', { className:"modal" },
+          React.createElement('div', { className:"modal-title" }, "Add New Bed"),
+          React.createElement('div', { className:"form-group" },
+            React.createElement('label', { className:"form-label" }, "Bed Name ", React.createElement('span', { className:"required-star" }, "*")),
+            React.createElement('input', { className:"form-input", placeholder:"e.g. Ranunculus Bed", value:bedForm.name, onChange:e=>setBedForm(f=>({...f, name:e.target.value})) })
+          ),
+          React.createElement('div', { className:"form-group" },
+            React.createElement('label', { className:"form-label" }, "Location / Notes"),
+            React.createElement('input', { className:"form-input", placeholder:"e.g. Plot 1, south facing", value:bedForm.notes, onChange:e=>setBedForm(f=>({...f, notes:e.target.value})) })
+          ),
+          React.createElement('div', { style:{display:"flex", gap:10} },
+            React.createElement('button', { className:"btn btn-secondary", onClick:()=>setModal(null) }, "Cancel"),
+            React.createElement('button', { className:"btn btn-primary", onClick:handleAddBed, disabled:!bedForm.name||syncing }, syncing ? "Saving..." : "Add Bed")
+          )
+        )
+      ),
+
+      // ── Modal: Add Variety ──
+      modal === "addVariety" && React.createElement('div', { className:"modal-overlay", onClick:e=>{ if(e.target===e.currentTarget) setModal(null); } },
+        React.createElement('div', { className:"modal" },
+          React.createElement('div', { className:"modal-title" }, "Add Variety"),
+          React.createElement('div', { className:"form-group" },
+            React.createElement('label', { className:"form-label" }, "Variety Name ", React.createElement('span', { className:"required-star" }, "*")),
+            React.createElement('input', { className:"form-input", placeholder:"e.g. Sweet Pea Mollie Rilstone", value:varForm.name, onChange:e=>setVarForm(f=>({...f, name:e.target.value})) })
+          ),
+          React.createElement('div', { className:"form-group" },
+            React.createElement('label', { className:"form-label" }, "Bed ", React.createElement('span', { className:"required-star" }, "*")),
+            React.createElement('select', { className:"form-input form-select", value:varForm.bedId, onChange:e=>setVarForm(f=>({...f, bedId:e.target.value})) },
+              React.createElement('option', { value:"" }, "Select bed..."),
+              userData.beds.map(b => React.createElement('option', { key:b.id, value:b.id }, b.name))
+            )
+          ),
+          React.createElement('div', { className:"form-group" },
+            React.createElement('label', { className:"form-label" }, "Colour / Description"),
+            React.createElement('input', { className:"form-input", placeholder:"e.g. Cream apricot", value:varForm.colour, onChange:e=>setVarForm(f=>({...f, colour:e.target.value})) })
+          ),
+          React.createElement('div', { className:"form-group" },
+            React.createElement('label', { className:"form-label" }, "Notes"),
+            React.createElement('input', { className:"form-input", placeholder:"e.g. Sown March 2026", value:varForm.notes, onChange:e=>setVarForm(f=>({...f, notes:e.target.value})) })
+          ),
+          React.createElement('div', { style:{display:"flex", gap:10} },
+            React.createElement('button', { className:"btn btn-secondary", onClick:()=>setModal(null) }, "Cancel"),
+            React.createElement('button', { className:"btn btn-primary", onClick:handleAddVariety, disabled:!varForm.name||!varForm.bedId||syncing }, syncing ? "Saving..." : "Add Variety")
+          )
+        )
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
+</body>
+</html>
