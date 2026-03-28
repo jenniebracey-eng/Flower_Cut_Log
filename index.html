@@ -412,7 +412,7 @@ function App() {
 
   const handleExport = () => {
     if (!userData?.cuts?.length) return;
-    const headers = ["Date","Bed","Variety","Stems","Length (cm)","Price (Ã£)","Quality","Notes"];
+    const headers = ["Date","Bed","Variety","Stems","Length (cm)","Price (£)","Quality","Notes"];
     const rows = userData.cuts.map(c => [
       new Date(c.cut_at).toLocaleDateString("en-GB"), c.bed_name, c.variety_name,
       c.stems, c.length_cm||"", c.price_per_stem||"", c.quality||"", c.notes||""
