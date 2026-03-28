@@ -785,7 +785,7 @@ function App() {
                           React.createElement('span', { style:{fontSize:14, color:"var(--text-dark)", fontWeight:500} }, name),
                           React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:20, fontWeight:700, color:"var(--green-dark)"} }, count)
                         ),
-                        rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "Ã£"+rev.toFixed(2)+" est. revenue")
+                        rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "£"+rev.toFixed(2)+" est. revenue")
                       );
                     })
                 ),
@@ -863,7 +863,7 @@ function App() {
                           React.createElement('span', { style:{fontSize:13, color:"var(--text-mid)", fontWeight:500} }, "w/c "+week),
                           React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:20, fontWeight:700, color:"var(--green-dark)"} }, data.stems)
                         ),
-                        data.rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "Ã£"+data.rev.toFixed(2)+" est. revenue")
+                        data.rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "£"+data.rev.toFixed(2)+" est. revenue")
                       )
                     );
                   })()
