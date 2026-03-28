@@ -1,4 +1,35 @@
-PRICE/STEM (£);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="✂ Cut Log" />
+  <meta name="theme-color" content="#1a3a2a" />
+  <title>Flower Cut Log</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; }
+    body { background: #e8e2d5; }
+    #root { display: flex; justify-content: center; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-presets="react">
+
+const SUPABASE_URL = "https://jzanovmfksktrbblbspg.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6YW5vdm1ma3NrdHJiYmxic3BnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDY4MTcsImV4cCI6MjA5MDE4MjgxN30.eRDoOfpJTfg7dPDvq0jaMju5ANL7szcdr9Ua5zIwkvk";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Icons Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 const Icon = ({ d, size = 20, color = "currentColor", strokeWidth = 1.8 }) => (
@@ -572,7 +603,7 @@ function App() {
                   React.createElement('div', { className: "form-group" },
                     React.createElement('label', { className: "form-label" }, "Stems Cut ", React.createElement('span', { className: "required-star" }, "*")),
                     React.createElement('div', { style:{display:'flex',alignItems:'center',gap:12} },
-                      React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String(Math.max(1,(Number(f.stems)||0)-1))})), style:{width:46,height:46,borderRadius:'50%',border:'none',background:'#d0cbbe',fontSize:24,cursor:'pointer',fontFamily:"'Cormorant Garamond',serif",flexShrink:0} }, '-'),
+                      React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String(Math.max(1,(Number(f.stems)||0)-1))})), style:{width:46,height:46,borderRadius:'50%',border:'none',background:'#d0cbbe',fontSize:24,cursor:'pointer',fontFamily:"'Cormorant Garamond',serif",flexShrink:0} }, '✓'),
                       React.createElement('input', { type:'number', min:'1', value:logForm.stems, onChange:e=>setLogForm(f=>({...f,stems:e.target.value})), style:{flex:1,textAlign:'center',fontSize:32,fontFamily:"'Cormorant Garamond',serif",border:'1px solid #ccc8b8',borderRadius:10,padding:'10px 0',background:'#faf8f3',outline:'none'} }),
                       React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String((Number(f.stems)||0)+1)})), style:{width:46,height:46,borderRadius:'50%',border:'none',background:'#d0cbbe',fontSize:24,cursor:'pointer',fontFamily:"'Cormorant Garamond',serif",flexShrink:0} }, '+')
                     ),
