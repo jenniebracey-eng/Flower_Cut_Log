@@ -603,9 +603,9 @@ function App() {
                   React.createElement('div', { className: "form-group" },
                     React.createElement('label', { className: "form-label" }, "Stems Cut ", React.createElement('span', { className: "required-star" }, "*")),
                     React.createElement('div', { style:{display:'flex',alignItems:'center',gap:12} },
-                      React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String(Math.max(1,(Number(f.stems)||0)-1))})), style:{width:46,height:46,borderRadius:'50%',border:'none',background:'#d0cbbe',fontSize:24,cursor:'pointer',fontFamily:"'Cormorant Garamond',serif",flexShrink:0} }, '-'),
+                      React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String(Math.max(1,(Number(f.stems)||0)-1))})), style:{width:44,height:44,borderRadius:'50%',border:'none',background:'var(--green-pale)',fontSize:20,fontWeight:600,cursor:'pointer',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--green-dark)',fontFamily:'DM Sans,sans-serif',lineHeight:1} }, '-'),
                       React.createElement('input', { type:'number', min:'1', value:logForm.stems, onChange:e=>setLogForm(f=>({...f,stems:e.target.value})), style:{flex:1,textAlign:'center',fontSize:32,fontFamily:"'Cormorant Garamond',serif",border:'1px solid #ccc8b8',borderRadius:10,padding:'10px 0',background:'#faf8f3',outline:'none'} }),
-                      React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String((Number(f.stems)||0)+1)})), style:{width:46,height:46,borderRadius:'50%',border:'none',background:'#d0cbbe',fontSize:24,cursor:'pointer',fontFamily:"'Cormorant Garamond',serif",flexShrink:0} }, '+')
+                      React.createElement('button', { type:'button', onClick:()=>setLogForm(f=>({...f,stems:String((Number(f.stems)||0)+1)})), style:{width:44,height:44,borderRadius:'50%',border:'none',background:'var(--green-pale)',fontSize:20,fontWeight:600,cursor:'pointer',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--green-dark)',fontFamily:'DM Sans,sans-serif',lineHeight:1} }, '+')
                     ),
                     logErrors.stems && React.createElement('div', { className: "error-msg" }, logErrors.stems)
                   ),
