@@ -488,6 +488,26 @@ function App() {
     showToast(msg);
   };
 
+  const handleBackup = () => {
+    const date = new Date().toISOString().slice(0,10);
+    const payload = {
+      exported_at: new Date().toISOString(),
+      user: session.user.email,
+      beds: userData.beds || [],
+      varieties: userData.varieties || [],
+      cuts: userData.cuts || []
+    };
+    const json = JSON.stringify(payload, null, 2);
+    const blob = new Blob([json], { type:"application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "cutlog-backup-" + date + ".json";
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Backup downloaded");
+  };
+
   // ---------- Loading ----------
   if (session === undefined) return React.createElement(React.Fragment, null,
     React.createElement('style', null, css),
@@ -815,9 +835,15 @@ function App() {
         tab === "summary" && React.createElement(React.Fragment, null,
           React.createElement('div', { className: "section-header", style:{marginTop:8} },
             React.createElement('div', { className: "section-title" }, "Summary"),
-            userData.cuts.length > 0 && React.createElement('button', { className: "btn btn-secondary btn-sm", onClick: handleExport },
-              React.createElement(Icon, { d:icons.download, size:14 }), " CSV"
-            )
+            userData.cuts.length > 0 &&
+              React.createElement('div', { style:{display:'flex',gap:8} },
+                React.createElement('button', { className: "btn btn-secondary btn-sm", onClick: handleExport },
+                  React.createElement(Icon, { d:icons.download, size:14 }), " CSV"
+                ),
+                React.createElement('button', { className: "btn btn-secondary btn-sm", onClick: handleBackup },
+                  React.createElement(Icon, { d:icons.download, size:14 }), " Backup"
+                )
+              )
           ),
           React.createElement('div', { className: "stats-grid" },
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, totalStems.toLocaleString()), React.createElement('div', { className: "stat-label" }, "Total Stems")),
