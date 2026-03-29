@@ -107,7 +107,7 @@ const css = `
   .desktop-sidebar { display: none; flex-direction: column; background: var(--green-deep); color: var(--white); padding: 0; position: relative; grid-column: 1; }
   .sidebar-brand { padding: 32px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
   .sidebar-brand-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--white); font-weight: 700; line-height: 1.2; }
-  .sidebar-brand-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .sidebar-brand-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; letter-spacing: 0.05em; text-transform: none; }
   .sidebar-nav { flex: 1; padding: 16px 0; }
   .sidebar-nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 24px; cursor: pointer; color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: all 0.15s; border-left: 3px solid transparent; }
   .sidebar-nav-item:hover { background: rgba(255,255,255,0.07); color: var(--white); }
@@ -876,31 +876,14 @@ function App() {
         tab === "beds" && React.createElement(React.Fragment, null,
           React.createElement('div', { className: "section-header", style:{marginTop:8} },
             React.createElement('div', { className: "section-title" }, "Beds & Varieties"),
-            React.createElement('div', { style:{display:'flex',gap:8} },
-              React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:function(){
-                  var csv = "Bed Name,Variety Name,Sown Date,Planted Date\nBed A,Sweet William,2026-02-01,2026-03-15\nBed A,Cornflower,2026-02-01,2026-03-15\nBed B,Dahlia,,";
-                  var blob = new Blob([csv],{type:'text/csv'});
-                  var url = URL.createObjectURL(blob);
-                  var a = document.createElement('a'); a.href=url; a.download='flower_tracker_import_template.csv';
-                  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-                }},
-                React.createElement(Icon, { d:icons.download, size:14 }), " Template"
-              ),
-              React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:function(){var c="Bed Name,Variety Name,Sown Date,Planted Date\nBed A,Cornflower,2026-02-01,2026-03-15\nBed B,Snapdragon,,";var b=new Blob([c],{type:'text/csv'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='flower_tracker_template.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}},
-                React.createElement(Icon, { d:icons.download, size:14 }), " Template"
-              ),
-              React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:()=>document.getElementById('csv-import-input').click(), disabled:syncing },
-                React.createElement(Icon, { d:icons.download, size:14 }), " Import CSV"
-              ),
-              React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:function(){
-                var csv = "Bed Name,Variety Name,Sown Date,Planted Date\nBed A,Sweet William,2026-02-01,2026-03-15\nBed A,Cornflower,2026-02-01,2026-03-15\nBed B,Snapdragon,,";
-                var blob = new Blob([csv],{type:'text/csv'});
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a'); a.href=url; a.download='flower_tracker_import_template.csv';
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-              } },
-                React.createElement(Icon, { d:icons.download, size:14 }), " Template"
+            React.createElement('div', { style:{display:'flex',flexDirection:'column',gap:6,alignItems:'flex-end'} },
+              React.createElement('div', { style:{display:'flex',gap:6} },
+                React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:function(){var c="Bed Name,Variety Name,Sown Date,Planted Date\nBed A,Sweet William,2026-02-01,2026-03-15\nBed B,Snapdragon,,";var b=new Blob([c],{type:'text/csv'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='flower_tracker_template.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);} },
+                  React.createElement(Icon, { d:icons.download, size:14 }), " Template"
+                ),
+                React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:()=>document.getElementById('csv-import-input').click(), disabled:syncing },
+                  React.createElement(Icon, { d:icons.download, size:14 }), " Import CSV"
+                )
               ),
               React.createElement('button', { className: "btn btn-primary btn-sm", onClick:()=>setModal("addBed") },
                 React.createElement(Icon, { d:icons.plus, size:15 }), " Add Bed"
