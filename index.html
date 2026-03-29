@@ -488,6 +488,27 @@ function App() {
     showToast(msg);
   };
 
+  const handleBackup = async () => {
+    setSyncing(true);
+    const uid = session.user.id;
+    const [{ data: beds }, { data: varieties }, { data: cuts }] = await Promise.all([
+      sb.from('beds').select('*').eq('user_id', uid).order('created_at'),
+      sb.from('varieties').select('*').eq('user_id', uid).order('created_at'),
+      sb.from('cuts').select('*').eq('user_id', uid).order('cut_at')
+    ]);
+    const backup = { exported_at: new Date().toISOString(), user_email: session.user.email, beds: beds||[], varieties: varieties||[], cuts: cuts||[] };
+    const json = JSON.stringify(backup, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cutlog_backup_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setSyncing(false);
+    showToast('Backup downloaded ok');
+  };
+
   // ---------- Loading ----------
   if (session === undefined) return React.createElement(React.Fragment, null,
     React.createElement('style', null, css),
@@ -721,8 +742,13 @@ function App() {
         tab === "cuts" && React.createElement(React.Fragment, null,
           React.createElement('div', { className: "section-header", style:{marginTop:8} },
             React.createElement('div', { className: "section-title" }, "Cut History"),
-            userData.cuts.length > 0 && React.createElement('button', { className: "btn btn-secondary btn-sm", onClick: handleExport },
-              React.createElement(Icon, { d:icons.download, size:14 }), " CSV"
+            userData.cuts.length > 0 && React.createElement('div', { style:{display:'flex',gap:8} },
+              React.createElement('button', { className: "btn btn-secondary btn-sm", onClick: handleExport },
+                React.createElement(Icon, { d:icons.download, size:14 }), " CSV"
+              ),
+              React.createElement('button', { className: "btn btn-secondary btn-sm", onClick: handleBackup, disabled:syncing },
+                React.createElement(Icon, { d:icons.download, size:14 }), " Backup"
+              )
             )
           ),
           userData.cuts.length === 0
