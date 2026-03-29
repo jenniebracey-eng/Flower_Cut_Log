@@ -256,6 +256,7 @@ function App() {
   const [varForm, setVarForm] = React.useState({ name:"", bedId:"", colour:"", notes:"", sownDate:"", plantedDate:"" });
   const [logErrors, setLogErrors] = React.useState({});
   const [summaryView, setSummaryView] = React.useState("variety");
+  const [summarySort, setSummarySort] = React.useState("amount");
   const [summaryPeriod, setSummaryPeriod] = React.useState("season");
   const [onboardBedName, setOnboardBedName] = React.useState("");
   const [onboardBedNotes, setOnboardBedNotes] = React.useState("");
@@ -928,7 +929,36 @@ function App() {
               )
             : React.createElement(React.Fragment, null,
                 React.createElement('div', { style:{display:"flex", background:"var(--green-mist)", borderRadius:"var(--radius-sm)", padding:3, marginBottom:14} },
-                  (function(){var _bv={},_bb={};periodCuts.forEach(function(c){_bv[c.variety_name]=(_bv[c.variety_name]||0)+c.stems;_bb[c.bed_name]=(_bb[c.bed_name]||0)+c.stems;});window._smx={v:Object.values(_bv).reduce(function(m,x){return x>m?x:m;},1),b:Object.values(_bb).reduce(function(m,x){return x>m?x:m;},1)};return null;}()),
+                  React.createElement('div', { style:{background:'var(--white)',borderRadius:'var(--radius)',border:'1px solid var(--border)',padding:'16px',marginBottom:14} },
+                  React.createElement('div', { style:{fontSize:12,fontWeight:600,color:'var(--text-mid)',textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:12} }, 'Stems by Month'),
+                  (function(){
+                    var allCuts = userData.cuts || [];
+                    var byMonth = {};
+                    allCuts.forEach(function(c){
+                      var d=new Date(c.cut_at), key=d.getFullYear()*100+d.getMonth();
+                      var lbl=d.toLocaleDateString('en-GB',{month:'short',year:'2-digit'});
+                      if(!byMonth[key]) byMonth[key]={lbl:lbl,stems:0,key:key};
+                      byMonth[key].stems+=c.stems;
+                    });
+                    var months=Object.values(byMonth).sort(function(a,b){return a.key-b.key;});
+                    if(!months.length) return React.createElement('div',{style:{color:'var(--text-light)',fontSize:13,textAlign:'center',padding:'16px 0'}},'No data yet');
+                    var maxVal=months.reduce(function(m,x){return x.stems>m?x.stems:m;},1);
+                    var W=480,H=140,pad=28,barW=Math.max(4,Math.floor((W-pad*2)/months.length)-2),gap=Math.floor((W-pad*2)/months.length);
+                    return React.createElement('div',{style:{overflowX:'auto',WebkitOverflowScrolling:'touch'}},
+                      React.createElement('svg',{viewBox:'0 0 '+W+' '+H,style:{width:'100%',minWidth:Math.max(240,months.length*32)+'px',height:'auto',display:'block'}},
+                        months.map(function(m,i){
+                          var x=pad+i*gap,barH=Math.round((m.stems/maxVal)*(H-40)),y=H-20-barH;
+                          return React.createElement('g',{key:m.key},
+                            React.createElement('rect',{x:x,y:y,width:barW,height:barH,rx:2,fill:'var(--green-mid)'}),
+                            React.createElement('text',{x:x+barW/2,y:H-6,textAnchor:'middle',fontSize:9,fill:'var(--text-light)'},m.lbl),
+                            barH>14 && React.createElement('text',{x:x+barW/2,y:y-3,textAnchor:'middle',fontSize:9,fill:'var(--green-dark)',fontWeight:'600'},m.stems)
+                          );
+                        })
+                      )
+                    );
+                  })()
+                ),
+                (function(){var _bv={},_bb={};periodCuts.forEach(function(c){_bv[c.variety_name]=(_bv[c.variety_name]||0)+c.stems;_bb[c.bed_name]=(_bb[c.bed_name]||0)+c.stems;});window._smx={v:Object.values(_bv).reduce(function(m,x){return x>m?x:m;},1),b:Object.values(_bb).reduce(function(m,x){return x>m?x:m;},1)};return null;}()),
                 [{ id:"variety", label:"Variety" },{ id:"bed", label:"Bed" },{ id:"week", label:"Week" },{ id:"month", label:"Month" },{ id:"year", label:"Year" }].map(v =>
                     React.createElement('button', {
                       key: v.id, onClick: ()=>setSummaryView(v.id),
@@ -941,8 +971,13 @@ function App() {
                 ),
                 summaryView === "variety" && React.createElement('div', { className: "card" },
                   React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Variety"),
+                  React.createElement('div', { style:{display:'flex',gap:6,marginBottom:8} },
+                    React.createElement('span', { style:{fontSize:11,color:'var(--text-light)',alignSelf:'center'} }, 'Sort:'),
+                    React.createElement('button', { onClick:function(){setSummarySort('amount');}, style:{fontSize:11,padding:'2px 8px',border:'1px solid var(--border)',borderRadius:4,background:summarySort==='amount'?'var(--green-dark)':'var(--white)',color:summarySort==='amount'?'var(--white)':'var(--text-mid)',cursor:'pointer'} }, 'Amount'),
+                    React.createElement('button', { onClick:function(){setSummarySort('name');}, style:{fontSize:11,padding:'2px 8px',border:'1px solid var(--border)',borderRadius:4,background:summarySort==='name'?'var(--green-dark)':'var(--white)',color:summarySort==='name'?'var(--white)':'var(--text-mid)',cursor:'pointer'} }, 'A-Z')
+                  ),
                   Object.entries(periodCuts.reduce((acc,c) => { acc[c.variety_name]=(acc[c.variety_name]||0)+c.stems; return acc; }, {}))
-                    .sort((a,b) => b[1]-a[1])
+                    .sort(function(a,b){ return summarySort==="name" ? a[0].localeCompare(b[0]) : b[1]-a[1]; })
                     .map(([name, count]) => {
                       const rev = periodCuts.filter(c=>c.variety_name===name).reduce((s,c)=>s+(c.stems*(c.price_per_stem||0)),0);
                       return React.createElement('div', { key:name, style:{padding:"10px 0", borderBottom:"1px solid var(--border)"} },
@@ -957,9 +992,14 @@ function App() {
                 ),
                 summaryView === "bed" && React.createElement('div', { className: "card" },
                   React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Bed"),
+                  React.createElement('div', { style:{display:'flex',gap:6,marginBottom:8} },
+                    React.createElement('span', { style:{fontSize:11,color:'var(--text-light)',alignSelf:'center'} }, 'Sort:'),
+                    React.createElement('button', { onClick:function(){setSummarySort('amount');}, style:{fontSize:11,padding:'2px 8px',border:'1px solid var(--border)',borderRadius:4,background:summarySort==='amount'?'var(--green-dark)':'var(--white)',color:summarySort==='amount'?'var(--white)':'var(--text-mid)',cursor:'pointer'} }, 'Amount'),
+                    React.createElement('button', { onClick:function(){setSummarySort('name');}, style:{fontSize:11,padding:'2px 8px',border:'1px solid var(--border)',borderRadius:4,background:summarySort==='name'?'var(--green-dark)':'var(--white)',color:summarySort==='name'?'var(--white)':'var(--text-mid)',cursor:'pointer'} }, 'A-Z')
+                  ),
                   (() => {
                     const byCut = periodCuts.reduce((acc,c) => { acc[c.bed_name]=(acc[c.bed_name]||0)+c.stems; return acc; }, {});
-                    return Object.entries(byCut).sort((a,b)=>b[1]-a[1]).map(([name, count]) => {
+                    return Object.entries(byCut).sort(function(a,b){ return summarySort==="name" ? a[0].localeCompare(b[0]) : b[1]-a[1]; }).map(([name, count]) => {
                       const rev = periodCuts.filter(c=>c.bed_name===name).reduce((s,c)=>s+(c.stems*(c.price_per_stem||0)),0);
                       const vars = [...new Set(periodCuts.filter(c=>c.bed_name===name).map(c=>c.variety_name))];
                       return React.createElement('div', { key:name, style:{padding:"10px 0", borderBottom:"1px solid var(--border)"} },
