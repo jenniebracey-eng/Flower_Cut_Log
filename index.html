@@ -256,6 +256,7 @@ function App() {
   const [varForm, setVarForm] = React.useState({ name:"", bedId:"", colour:"", notes:"", sownDate:"", plantedDate:"" });
   const [logErrors, setLogErrors] = React.useState({});
   const [summaryView, setSummaryView] = React.useState("variety");
+  const [summaryPeriod, setSummaryPeriod] = React.useState("season");
   const [onboardBedName, setOnboardBedName] = React.useState("");
   const [onboardBedNotes, setOnboardBedNotes] = React.useState("");
   const [onboardVarName, setOnboardVarName] = React.useState("");
@@ -460,8 +461,16 @@ function App() {
     showToast("CSV downloaded  ok");
   };
 
-  const totalStems = userData?.cuts?.reduce((s,c) => s+c.stems, 0) || 0;
-  const totalRevenue = userData?.cuts?.reduce((s,c) => s+(c.stems*(c.price_per_stem||0)), 0) || 0;
+  const _now=new Date();
+  const periodCuts=(userData?.cuts||[]).filter(function(c){
+    var d=new Date(c.cut_at);
+    if(summaryPeriod==='week'){var ws=new Date(_now);ws.setDate(_now.getDate()-_now.getDay());ws.setHours(0,0,0,0);return d>=ws;}
+    if(summaryPeriod==='month'){return d.getMonth()===_now.getMonth()&&d.getFullYear()===_now.getFullYear();}
+    if(summaryPeriod==='season'){var yr=_now.getMonth()>=3?_now.getFullYear():_now.getFullYear()-1;return d>=new Date(yr,3,1);}
+    return true;
+  });
+  const totalStems=periodCuts.reduce(function(s,c){return s+c.stems;},0)||0;
+  const totalRevenue=periodCuts.reduce(function(s,c){return s+(c.stems*(c.price_per_stem||0));},0)||0;
   const filteredVarieties = userData?.varieties?.filter(v => v.bed_id === logForm.bedId) || [];
   const displayName = session?.user?.user_metadata?.full_name || session?.user?.email?.split("@")[0] || "Grower";
 
@@ -895,21 +904,31 @@ function App() {
               React.createElement(Icon, { d:icons.download, size:14 }), " CSV"
             )
           ),
+          React.createElement('div', { style:{display:'flex',background:'var(--green-mist)',borderRadius:'var(--radius-sm)',padding:3,marginBottom:14} },
+            [{ id:'week',label:'This Week'},{ id:'month',label:'This Month'},{ id:'season',label:'This Season'},{ id:'all',label:'All Time'}].map(function(p){
+              return React.createElement('button',{ key:p.id, onClick:function(){setSummaryPeriod(p.id);},
+                style:{ flex:1,padding:'7px 2px',border:'none',borderRadius:6,fontSize:11,fontWeight:600,cursor:'pointer',transition:'all 0.2s',
+                  background:summaryPeriod===p.id?'var(--white)':'transparent',
+                  color:summaryPeriod===p.id?'var(--green-dark)':'var(--text-light)',
+                  boxShadow:summaryPeriod===p.id?'0 1px 4px rgba(26,58,42,0.10)':'none' }
+              },p.label);
+            })
+          ),
           React.createElement('div', { className: "stats-grid" },
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, totalStems.toLocaleString()), React.createElement('div', { className: "stat-label" }, "Total Stems")),
             React.createElement('div', { className: "stat-card accent" }, React.createElement('div', { className: "stat-val accent" }, "\u00a3"+totalRevenue.toFixed(0)), React.createElement('div', { className: "stat-label" }, "Est. Revenue")),
-            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, userData.cuts.length), React.createElement('div', { className: "stat-label" }, "Cuts Logged")),
+            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, periodCuts.length), React.createElement('div', { className: "stat-label" }, "Cuts Logged")),
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, userData.beds.length), React.createElement('div', { className: "stat-label" }, "Active Beds"))
           ),
-          userData.cuts.length === 0
+          periodCuts.length === 0
             ? React.createElement('div', { className: "empty" },
                 React.createElement('div', { className: "empty-icon" }, React.createElement(Icon, { d:icons.chart, size:40 })),
-                React.createElement('div', { className: "empty-text" }, "No data yet"),
-                React.createElement('div', { className: "empty-sub" }, "Start logging cuts to see your summary")
+                React.createElement('div', { className: "empty-text" }, "No cuts in this period"),
+                React.createElement('div', { className: "empty-sub" }, "Try a wider range or log some cuts")
               )
             : React.createElement(React.Fragment, null,
                 React.createElement('div', { style:{display:"flex", background:"var(--green-mist)", borderRadius:"var(--radius-sm)", padding:3, marginBottom:14} },
-                  [{ id:"variety", label:"Variety" },{ id:"bed", label:"Bed" },{ id:"week", label:"Week" },{ id:"month", label:"Month" }].map(v =>
+                  [{ id:"variety", label:"Variety" },{ id:"bed", label:"Bed" },{ id:"week", label:"Week" },{ id:"month", label:"Month" },{ id:"year", label:"Year" }].map(v =>
                     React.createElement('button', {
                       key: v.id, onClick: ()=>setSummaryView(v.id),
                       style:{ flex:1, padding:"7px 4px", border:"none", borderRadius:6, fontSize:12, fontWeight:600, fontFamily:"DM Sans, sans-serif", cursor:"pointer", transition:"all 0.2s",
@@ -921,26 +940,27 @@ function App() {
                 ),
                 summaryView === "variety" && React.createElement('div', { className: "card" },
                   React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Variety"),
-                  Object.entries(userData.cuts.reduce((acc,c) => { acc[c.variety_name]=(acc[c.variety_name]||0)+c.stems; return acc; }, {}))
+                  Object.entries(periodCuts.reduce((acc,c) => { acc[c.variety_name]=(acc[c.variety_name]||0)+c.stems; return acc; }, {}))
                     .sort((a,b) => b[1]-a[1])
                     .map(([name, count]) => {
-                      const rev = userData.cuts.filter(c=>c.variety_name===name).reduce((s,c)=>s+(c.stems*(c.price_per_stem||0)),0);
+                      const rev = periodCuts.filter(c=>c.variety_name===name).reduce((s,c)=>s+(c.stems*(c.price_per_stem||0)),0);
                       return React.createElement('div', { key:name, style:{padding:"10px 0", borderBottom:"1px solid var(--border)"} },
                         React.createElement('div', { style:{display:"flex", justifyContent:"space-between", alignItems:"center"} },
                           React.createElement('span', { style:{fontSize:14, color:"var(--text-dark)", fontWeight:500} }, name),
-                          React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:20, fontWeight:700, color:"var(--green-dark)"} }, count)
+                          React.createElement('span', { style:{fontFamily:"Playfair Display, serif", fontSize:18, fontWeight:700, color:"var(--green-dark)"} }, count.toLocaleString())
                         ),
-                        rev > 0 && React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:2} }, "\u00a3"+rev.toFixed(2)+" est. revenue")
+                        
+                        rev > 0 && React.createElement('div', { style:{fontSize:11, color:"var(--text-light)"} }, "\u00a3"+rev.toFixed(2)+" est. revenue")
                       );
                     })
                 ),
                 summaryView === "bed" && React.createElement('div', { className: "card" },
                   React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Bed"),
                   (() => {
-                    const byCut = userData.cuts.reduce((acc,c) => { acc[c.bed_name]=(acc[c.bed_name]||0)+c.stems; return acc; }, {});
+                    const byCut = periodCuts.reduce((acc,c) => { acc[c.bed_name]=(acc[c.bed_name]||0)+c.stems; return acc; }, {});
                     return Object.entries(byCut).sort((a,b)=>b[1]-a[1]).map(([name, count]) => {
-                      const rev = userData.cuts.filter(c=>c.bed_name===name).reduce((s,c)=>s+(c.stems*(c.price_per_stem||0)),0);
-                      const vars = [...new Set(userData.cuts.filter(c=>c.bed_name===name).map(c=>c.variety_name))];
+                      const rev = periodCuts.filter(c=>c.bed_name===name).reduce((s,c)=>s+(c.stems*(c.price_per_stem||0)),0);
+                      const vars = [...new Set(periodCuts.filter(c=>c.bed_name===name).map(c=>c.variety_name))];
                       return React.createElement('div', { key:name, style:{padding:"10px 0", borderBottom:"1px solid var(--border)"} },
                         React.createElement('div', { style:{display:"flex", justifyContent:"space-between", alignItems:"center"} },
                           React.createElement('span', { style:{fontSize:14, color:"var(--text-dark)", fontWeight:500} }, name),
@@ -958,7 +978,7 @@ function App() {
                   React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Week"),
                   (() => {
                     const weeks = {};
-                    userData.cuts.forEach(c => {
+                    periodCuts.forEach(c => {
                       const d = new Date(c.cut_at), day = d.getDay()||7;
                       const mon = new Date(d); mon.setDate(d.getDate()-day+1);
                       const key = mon.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
@@ -976,7 +996,7 @@ function App() {
                   React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Month"),
                   (() => {
                     const months = {};
-                    userData.cuts.forEach(c => {
+                    periodCuts.forEach(c => {
                       const key = new Date(c.cut_at).toLocaleDateString("en-GB",{month:"long",year:"numeric"});
                       months[key] = (months[key]||0)+c.stems;
                     });
@@ -996,7 +1016,7 @@ function App() {
                       const mon = new Date(d); mon.setDate(d.getDate()-day+1);
                       return mon.toLocaleDateString("en-GB", {day:"numeric", month:"short"});
                     };
-                    const byWeek = userData.cuts.reduce((acc,c) => {
+                    const byWeek = periodCuts.reduce((acc,c) => {
                       const k = getWeekKey(c.cut_at);
                       if (!acc[k]) acc[k] = { stems:0, rev:0, date: new Date(c.cut_at) };
                       acc[k].stems += c.stems; acc[k].rev += c.stems*(c.price_per_stem||0);
@@ -1016,7 +1036,7 @@ function App() {
                 summaryView === "month" && React.createElement('div', { className: "card" },
                   React.createElement('div', { style:{fontSize:12, fontWeight:600, color:"var(--text-mid)", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:12} }, "Stems by Month"),
                   (() => {
-                    const byMonth = userData.cuts.reduce((acc,c) => {
+                    const byMonth = periodCuts.reduce((acc,c) => {
                       const k = new Date(c.cut_at).toLocaleDateString("en-GB", {month:"long", year:"numeric"});
                       const sortKey = new Date(c.cut_at).getFullYear()*100 + new Date(c.cut_at).getMonth();
                       if (!acc[k]) acc[k] = { stems:0, rev:0, sort:sortKey };
