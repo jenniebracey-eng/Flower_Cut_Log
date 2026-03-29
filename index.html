@@ -111,7 +111,7 @@ const css = `
     padding: 40px 24px;
   }
   .auth-title { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--white); text-align: center; line-height: 1.2; margin-bottom: 6px; margin-top: 12px; }
-  .auth-subtitle { font-size: 14px; color: rgba(255,255,255,0.55); text-align: center; margin-bottom: 36px; }
+  .auth-subtitle { font-size: 13px; color: rgba(255,255,255,0.55); text-align: center; margin-bottom: 32px; white-space: nowrap; }
   .auth-card { background: var(--white); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 380px; box-shadow: var(--shadow-lg); }
   .auth-tabs { display: flex; background: var(--green-mist); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 22px; }
   .auth-tab { flex: 1; padding: 8px; text-align: center; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; color: var(--text-mid); border: none; background: none; font-family: 'DM Sans', sans-serif; }
@@ -166,9 +166,9 @@ const css = `
   /* Stats */
   .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
   .stat-card { background: linear-gradient(135deg, var(--green-pale), #dff0e2); border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); }
-  .stat-card.accent { background: linear-gradient(135deg, var(--blush), #f8d8da); border-color: #f0c8cc; }
+  .stat-card.accent { background: linear-gradient(135deg, #f5f0e8, #ede5d5); border-color: var(--cream); }
   .stat-val { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--green-deep); font-weight: 700; }
-  .stat-val.accent { color: var(--coral-deep); }
+  .stat-val.accent { color: var(--green-dark); }
   .stat-label { font-size: 11px; color: var(--text-light); margin-top: 2px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
 
   /* Log form */
@@ -429,8 +429,7 @@ function App() {
       setUserData(d => ({ ...d, cuts: [data, ...d.cuts] }));
       setLogForm({ bedId:"", varietyId:"", stems:"", length:"", price:"", quality:"", notes:"", photo:"", cutDate:new Date().toISOString().slice(0,10) });
       setLogErrors({});
-      showToast("Cut logged  ok");
-      setTab("cuts");
+      showToast("Cut logged  ok - ready for next cut");
     }
     setSyncing(false);
   };
@@ -853,6 +852,15 @@ function App() {
           React.createElement('div', { className: "section-header", style:{marginTop:8} },
             React.createElement('div', { className: "section-title" }, "Beds & Varieties"),
             React.createElement('div', { style:{display:'flex',gap:8} },
+              React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:function(){
+                  var csv = "Bed Name,Variety Name,Sown Date,Planted Date\nBed A,Sweet William,2026-02-01,2026-03-15\nBed A,Cornflower,2026-02-01,2026-03-15\nBed B,Dahlia,,";
+                  var blob = new Blob([csv],{type:'text/csv'});
+                  var url = URL.createObjectURL(blob);
+                  var a = document.createElement('a'); a.href=url; a.download='flower_tracker_import_template.csv';
+                  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+                }},
+                React.createElement(Icon, { d:icons.download, size:14 }), " Template"
+              ),
               React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:()=>document.getElementById('csv-import-input').click(), disabled:syncing },
                 React.createElement(Icon, { d:icons.download, size:14 }), " Import CSV"
               ),
@@ -931,8 +939,8 @@ function App() {
               )
             : React.createElement(React.Fragment, null,
                 React.createElement('div', { style:{display:"flex", background:"var(--green-mist)", borderRadius:"var(--radius-sm)", padding:3, marginBottom:14} },
-                  React.createElement('div', { style:{background:'var(--white)',borderRadius:'var(--radius)',border:'1px solid var(--border)',padding:'16px',marginBottom:14} },
-                  React.createElement('div', { style:{fontSize:12,fontWeight:600,color:'var(--text-mid)',textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:12} }, 'Stems by Month'),
+                  React.createElement('div', { style:{background:'var(--white)',borderRadius:'var(--radius)',border:'1px solid var(--border)',padding:'16px 20px',marginBottom:16} },
+                  React.createElement('div', { style:{fontSize:12,fontWeight:600,color:'var(--text-mid)',textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:14} }, 'Stems by Month'),
                   (function(){
                     var allCuts = userData.cuts || [];
                     var byMonth = {};
