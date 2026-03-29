@@ -432,6 +432,62 @@ function App() {
   const filteredVarieties = userData?.varieties?.filter(v => v.bed_id === logForm.bedId) || [];
   const displayName = session?.user?.user_metadata?.full_name || session?.user?.email?.split("@")[0] || "Grower";
 
+  const handleCsvImport = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length < 2) { showToast('CSV is empty or has no data rows'); return; }
+    const header = lines[0].split(',').map(s => s.trim().replace(/^"+|"+$/g,'').toLowerCase());
+    const bedNameIdx = header.findIndex(h => h === 'bed name');
+    const varNameIdx = header.findIndex(h => h === 'variety name');
+    const sownIdx    = header.findIndex(h => h === 'sown date');
+    const plantedIdx = header.findIndex(h => h === 'planted date');
+    if (bedNameIdx === -1) { showToast('CSV missing Bed Name column'); return; }
+    setSyncing(true);
+    let bedsCreated = 0, varsCreated = 0, bedsSkipped = 0, errors = 0;
+    const existingBedNames = new Set((userData.beds || []).map(b => b.name.toLowerCase()));
+    const localBedMap = {};
+    (userData.beds || []).forEach(b => { localBedMap[b.name.toLowerCase()] = b.id; });
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',').map(s => s.trim().replace(/^"+|"+$/g,''));
+      const bedName = cols[bedNameIdx] || '';
+      const varName = varNameIdx !== -1 ? (cols[varNameIdx] || '') : '';
+      const sownDate = sownIdx !== -1 ? (cols[sownIdx] || '') : '';
+      const plantedDate = plantedIdx !== -1 ? (cols[plantedIdx] || '') : '';
+      if (!bedName) continue;
+      const bedKey = bedName.toLowerCase();
+      if (!localBedMap[bedKey]) {
+        if (existingBedNames.has(bedKey)) { bedsSkipped++; }
+        else {
+          const { data: newBed, error: bedErr } = await sb.from('beds').insert({ user_id: session.user.id, name: bedName }).select().single();
+          if (bedErr) { errors++; continue; }
+          localBedMap[bedKey] = newBed.id;
+          existingBedNames.add(bedKey);
+          bedsCreated++;
+        }
+      }
+      const bedId = localBedMap[bedKey];
+      if (varName && bedId) {
+        const { error: varErr } = await sb.from('varieties').insert({
+          user_id: session.user.id, bed_id: bedId, name: varName,
+          sown_date: sownDate || null, planted_date: plantedDate || null
+        });
+        if (varErr) errors++;
+        else varsCreated++;
+      }
+    }
+    const { data: freshBeds } = await sb.from('beds').select('*').eq('user_id', session.user.id).order('created_at');
+    const { data: freshVars } = await sb.from('varieties').select('*').eq('user_id', session.user.id).order('created_at');
+    setUserData(d => ({ ...d, beds: freshBeds || [], varieties: freshVars || [] }));
+    setSyncing(false);
+    let msg = 'Import done: ' + bedsCreated + ' bed' + (bedsCreated !== 1 ? 's' : '') + ', ' + varsCreated + ' variet' + (varsCreated !== 1 ? 'ies' : 'y') + ' added';
+    if (bedsSkipped > 0) msg += ', ' + bedsSkipped + ' duplicate bed' + (bedsSkipped !== 1 ? 's' : '') + ' skipped';
+    if (errors > 0) msg += ', ' + errors + ' error' + (errors !== 1 ? 's' : '');
+    showToast(msg);
+  };
+
   // ---------- Loading ----------
   if (session === undefined) return React.createElement(React.Fragment, null,
     React.createElement('style', null, css),
@@ -647,7 +703,8 @@ function App() {
                             React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:6, fontFamily:"'Courier Prime',monospace"} }, "TAP TO ADD PHOTO")
                           )
                     ),
-                    React.createElement('input', { id:"photo-input", type:"file", accept:"image/*", capture:"environment", onChange:handlePhoto })
+                    React.createElement('input', { id:"photo-input", type:"file", accept:"image/*", capture:"environment", onChange:handlePhoto }),
+                  React.createElement('input', { id:"csv-import-input", type:"file", accept:".csv,text/csv", style:{display:"none"}, onChange:handleCsvImport })
                   ),
                   React.createElement('div', { className:"form-group" },
                     React.createElement('label', { className:"form-label" }, "Cut date"),
@@ -707,8 +764,13 @@ function App() {
         tab === "beds" && React.createElement(React.Fragment, null,
           React.createElement('div', { className: "section-header", style:{marginTop:8} },
             React.createElement('div', { className: "section-title" }, "Beds & Varieties"),
-            React.createElement('button', { className: "btn btn-primary btn-sm", onClick:()=>setModal("addBed") },
-              React.createElement(Icon, { d:icons.plus, size:15 }), " Add Bed"
+            React.createElement('div', { style:{display:'flex',gap:8} },
+              React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:()=>document.getElementById('csv-import-input').click(), disabled:syncing },
+                React.createElement(Icon, { d:icons.download, size:14 }), " Import CSV"
+              ),
+              React.createElement('button', { className: "btn btn-primary btn-sm", onClick:()=>setModal("addBed") },
+                React.createElement(Icon, { d:icons.plus, size:15 }), " Add Bed"
+              )
             )
           ),
           userData.beds.length === 0
