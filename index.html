@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content=" Cut Log" />
   <meta name="theme-color" content="#1a3a2a" />
-  <title>Flower Cut Log</title>
+  <title>Flower Tracker</title>
   <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiRmxvd2VyIEN1dCBMb2ciLCJzaG9ydF9uYW1lIjoiQ3V0IExvZyIsImRlc2NyaXB0aW9uIjoiVHJhY2sgZXZlcnkgc3RlbSwgZXZlcnkgc2Vhc29uIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMyYzNhMWUiLCJ0aGVtZV9jb2xvciI6IiMyYzNhMWUiLCJvcmllbnRhdGlvbiI6InBvcnRyYWl0IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTkyIDE5MiclM0UlM0NyZWN0IHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyBmaWxsPSclMjMyYzNhMWUnLyUzRSUzQ2NpcmNsZSBjeD0nOTYnIGN5PSc3Micgcj0nMzYnIGZpbGw9J25vbmUnIHN0cm9rZT0nJTIzZWFlY2RlJyBzdHJva2Utd2lkdGg9JzgnLyUzRSUzQ2xpbmUgeDE9Jzk2JyB5MT0nMTA4JyB4Mj0nOTYnIHkyPScxNjAnIHN0cm9rZT0nJTIzZWFlY2RlJyBzdHJva2Utd2lkdGg9JzgnLyUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -352,6 +352,7 @@ function App() {
   // ---------- Data mutations ----------
   const handleAddBed = async () => {
     if (!bedForm.name) return;
+    if (userData.beds.length >= 10) { showToast("Free plan: up to 10 beds. Upgrade to Flower Tracker Pro for unlimited."); return; }
     setSyncing(true);
     const { data, error } = await sb.from("beds").insert({
       user_id: session.user.id, name: bedForm.name, notes: bedForm.notes || null
@@ -381,6 +382,7 @@ function App() {
 
   const handleAddVariety = async () => {
     if (!varForm.name || !varForm.bedId) return;
+    if (userData.varieties.length >= 10) { showToast("Free plan: up to 10 varieties. Upgrade to Flower Tracker Pro for unlimited."); return; }
     setSyncing(true);
     const { data, error } = await sb.from("varieties").insert({
       user_id: session.user.id, bed_id: varForm.bedId, name: varForm.name,
@@ -458,7 +460,7 @@ function App() {
     const csv = [headers,...rows].map(r => r.map(v => `"${v}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type:"text/csv" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href=url; a.download="flower_cuts.csv"; a.click();
+    const a = document.createElement("a"); a.href=url; a.download="flower_tracker_cuts.csv"; a.click();
     showToast("CSV downloaded  ok");
   };
 
@@ -489,6 +491,7 @@ function App() {
     const plantedIdx = header.findIndex(h => h === 'planted date');
     if (bedNameIdx === -1) { showToast('CSV missing Bed Name column'); return; }
     setSyncing(true);
+    if (userData.beds.length >= 10 && userData.varieties.length >= 10) { showToast("Free plan limit reached. Upgrade to Flower Tracker Pro for unlimited beds and varieties."); setSyncing(false); return; }
     let bedsCreated = 0, varsCreated = 0, bedsSkipped = 0, errors = 0;
     const existingBedNames = new Set((userData.beds || []).map(b => b.name.toLowerCase()));
     const localBedMap = {};
@@ -545,7 +548,7 @@ function App() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'cutlog_backup_' + new Date().toISOString().slice(0,10) + '.json';
+    a.download = 'flower_tracker_backup_' + new Date().toISOString().slice(0,10) + '.json';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
     setSyncing(false);
@@ -566,7 +569,7 @@ function App() {
     React.createElement('style', null, css),
     React.createElement('div', { className: "auth-screen" },
       React.createElement(Icon, { d: icons.flower, size: 48, color: "rgba(255,255,255,0.65)", strokeWidth: 1.2 }),
-      React.createElement('h1', { className: "auth-title" }, "Flower Cut Log"),
+      React.createElement('h1', { className: "auth-title" }, "Flower Tracker"),
       React.createElement('p', { className: "auth-subtitle" }, "Track every stem, every season"),
       React.createElement('div', { className: "auth-card" },
         React.createElement('div', { className: "auth-tabs" },
@@ -670,8 +673,8 @@ function App() {
 
       React.createElement('div', { className: "desktop-sidebar" },
         React.createElement('div', { className: "sidebar-brand" },
-          React.createElement('div', { className: "sidebar-brand-title" }, "Flower Cut Log"),
-          React.createElement('div', { className: "sidebar-brand-sub" }, "Track every stem")
+          React.createElement('div', { className: "sidebar-brand-title" }, "Flower Tracker"),
+          React.createElement('div', { className: "sidebar-brand-sub" }, "Track every stem, every season")
         ),
         React.createElement('div', { className: "sidebar-nav" },
           ['log','cuts','beds','summary'].map(function(t) {
@@ -688,7 +691,7 @@ function App() {
 
       React.createElement('div', { className: "top-bar" },
         React.createElement('div', null,
-          React.createElement('div', { className: "top-bar-title" }, "Cut Log"),
+          React.createElement('div', { className: "top-bar-title" }, "Flower Tracker",
           React.createElement('div', { className: "top-bar-sub" },
             React.createElement('span', { className: `sync-dot ${syncing ? "syncing" : ""}` }),
             syncing ? "Syncing..." : displayName
