@@ -352,7 +352,7 @@ function App() {
   // ---------- Data mutations ----------
   const handleAddBed = async () => {
     if (!bedForm.name) return;
-    if (userData.beds.length >= 10) { showToast("Free plan: up to 10 beds. Upgrade to Flower Tracker Pro for unlimited."); return; }
+    if ((userData.beds||[]).length >= 10) { showToast("Free plan: up to 10 beds. Upgrade to Flower Tracker Pro for unlimited."); return; }
     setSyncing(true);
     const { data, error } = await sb.from("beds").insert({
       user_id: session.user.id, name: bedForm.name, notes: bedForm.notes || null
@@ -382,7 +382,7 @@ function App() {
 
   const handleAddVariety = async () => {
     if (!varForm.name || !varForm.bedId) return;
-    if (userData.varieties.length >= 10) { showToast("Free plan: up to 10 varieties. Upgrade to Flower Tracker Pro for unlimited."); return; }
+    if ((userData.varieties||[]).length >= 10) { showToast("Free plan: up to 10 varieties. Upgrade to Flower Tracker Pro for unlimited."); return; }
     setSyncing(true);
     const { data, error } = await sb.from("varieties").insert({
       user_id: session.user.id, bed_id: varForm.bedId, name: varForm.name,
@@ -491,7 +491,7 @@ function App() {
     const plantedIdx = header.findIndex(h => h === 'planted date');
     if (bedNameIdx === -1) { showToast('CSV missing Bed Name column'); return; }
     setSyncing(true);
-    if (userData.beds.length >= 10 && userData.varieties.length >= 10) { showToast("Free plan limit reached. Upgrade to Flower Tracker Pro for unlimited beds and varieties."); setSyncing(false); return; }
+    if ((userData.beds||[]).length >= 10 && (userData.varieties||[]).length >= 10) { showToast("Free plan limit reached. Upgrade to Flower Tracker Pro for unlimited."); setSyncing(false); return; }
     let bedsCreated = 0, varsCreated = 0, bedsSkipped = 0, errors = 0;
     const existingBedNames = new Set((userData.beds || []).map(b => b.name.toLowerCase()));
     const localBedMap = {};
