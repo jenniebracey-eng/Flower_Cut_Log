@@ -491,7 +491,6 @@ function App() {
     const plantedIdx = header.findIndex(h => h === 'planted date');
     if (bedNameIdx === -1) { showToast('CSV missing Bed Name column'); return; }
     setSyncing(true);
-    if ((userData.beds||[]).length >= 10 && (userData.varieties||[]).length >= 10) { showToast("Free plan limit reached. Upgrade to Flower Tracker Pro for unlimited."); setSyncing(false); return; }
     let bedsCreated = 0, varsCreated = 0, bedsSkipped = 0, errors = 0;
     const existingBedNames = new Set((userData.beds || []).map(b => b.name.toLowerCase()));
     const localBedMap = {};
@@ -691,7 +690,7 @@ function App() {
 
       React.createElement('div', { className: "top-bar" },
         React.createElement('div', null,
-          React.createElement('div', { className: "top-bar-title" }, "Flower Tracker",
+          React.createElement('div', { className: "top-bar-title" }, "Flower Tracker"),
           React.createElement('div', { className: "top-bar-sub" },
             React.createElement('span', { className: `sync-dot ${syncing ? "syncing" : ""}` }),
             syncing ? "Syncing..." : displayName
