@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-title" content=" Cut Log" />
   <meta name="theme-color" content="#1a3a2a" />
   <title>Flower Cut Log</title>
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiRmxvd2VyIEN1dCBMb2ciLCJzaG9ydF9uYW1lIjoiQ3V0IExvZyIsImRlc2NyaXB0aW9uIjoiVHJhY2sgZXZlcnkgc3RlbSwgZXZlcnkgc2Vhc29uIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMyYzNhMWUiLCJ0aGVtZV9jb2xvciI6IiMyYzNhMWUiLCJvcmllbnRhdGlvbiI6InBvcnRyYWl0IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTkyIDE5MiclM0UlM0NyZWN0IHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyBmaWxsPSclMjMyYzNhMWUnLyUzRSUzQ2NpcmNsZSBjeD0nOTYnIGN5PSc3Micgcj0nMzYnIGZpbGw9J25vbmUnIHN0cm9rZT0nJTIzZWFlY2RlJyBzdHJva2Utd2lkdGg9JzgnLyUzRSUzQ2xpbmUgeDE9Jzk2JyB5MT0nMTA4JyB4Mj0nOTYnIHkyPScxNjAnIHN0cm9rZT0nJTIzZWFlY2RlJyBzdHJva2Utd2lkdGg9JzgnLyUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -68,7 +68,30 @@ const css = `
     --radius: 14px; --radius-sm: 8px;
   }
   body { background: var(--green-mist); font-family: 'DM Sans', sans-serif; color: var(--text-dark); }
+  /* Mobile-first app shell */
   .app { min-height: 100vh; height: 100%; max-width: 480px; margin: 0 auto; background: var(--white); position: relative; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Desktop layout 900px+ */
+  @media (min-width: 900px) {
+    body { background: var(--green-mist); }
+    .app { max-width: 100%; margin: 0; display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 100vh; overflow: hidden; }
+    .bottom-nav { display: none; }
+    .content { padding: 32px 40px 40px; overflow-y: auto; -webkit-overflow-scrolling: touch; min-height: 0; grid-column: 2; }
+    .desktop-sidebar { display: flex !important; }
+    .top-bar { grid-column: 2; padding-top: calc(16px + env(safe-area-inset-top)); }
+    .content { grid-column: 2; padding-bottom: 40px; }
+  }
+
+  /* Desktop sidebar - hidden on mobile */
+  .desktop-sidebar { display: none; flex-direction: column; background: var(--green-deep); color: var(--white); padding: 0; position: relative; grid-column: 1; }
+  .sidebar-brand { padding: 32px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-brand-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--white); font-weight: 700; line-height: 1.2; }
+  .sidebar-brand-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .sidebar-nav { flex: 1; padding: 16px 0; }
+  .sidebar-nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 24px; cursor: pointer; color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: all 0.15s; border-left: 3px solid transparent; }
+  .sidebar-nav-item:hover { background: rgba(255,255,255,0.07); color: var(--white); }
+  .sidebar-nav-item.active { background: rgba(255,255,255,0.1); color: var(--white); border-left-color: var(--gold); }
+  .sidebar-footer { padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: rgba(255,255,255,0.4); }
 
   /* Auth */
   .auth-screen {
@@ -110,7 +133,7 @@ const css = `
   .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; cursor: pointer; border: none; background: none; color: var(--text-light); transition: color 0.2s; font-family: 'DM Sans', sans-serif; }
   .nav-item.active { color: var(--green-dark); }
   .nav-label { font-size: 10px; font-weight: 500; }
-  .content { padding: 16px 20px 120px; flex: 1; background: var(--green-mist); overflow-y: auto; -webkit-overflow-scrolling: touch; min-height: 0; }
+  .content { padding: 16px 20px 120px; padding-bottom: calc(120px + env(safe-area-inset-bottom)); flex: 1; background: var(--green-mist); overflow-y: auto; -webkit-overflow-scrolling: touch; min-height: 0; }
 
   /* Cards */
   .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
@@ -625,6 +648,24 @@ function App() {
     React.createElement('style', null, css),
     React.createElement('div', { className: "app" },
 
+      React.createElement('div', { className: "desktop-sidebar" },
+        React.createElement('div', { className: "sidebar-brand" },
+          React.createElement('div', { className: "sidebar-brand-title" }, "Flower Cut Log"),
+          React.createElement('div', { className: "sidebar-brand-sub" }, "Track every stem")
+        ),
+        React.createElement('div', { className: "sidebar-nav" },
+          ['log','cuts','beds','summary'].map(function(t) {
+            const labels = { log: 'Log a Cut', cuts: 'Cut History', beds: 'Beds & Varieties', summary: 'Summary' };
+            const iconMap = { log: icons.scissors, cuts: icons.leaf, beds: icons.bed, summary: icons.chart };
+            return React.createElement('div', { key: t, className: 'sidebar-nav-item' + (tab === t ? ' active' : ''), onClick: function(){ setTab(t); } },
+              React.createElement(Icon, { d: iconMap[t], size: 18, color: tab === t ? 'white' : 'rgba(255,255,255,0.65)' }),
+              labels[t]
+            );
+          })
+        ),
+        React.createElement('div', { className: "sidebar-footer" }, session && session.user && session.user.email)
+      ),
+
       React.createElement('div', { className: "top-bar" },
         React.createElement('div', null,
           React.createElement('div', { className: "top-bar-title" }, "Cut Log"),
@@ -724,8 +765,7 @@ function App() {
                             React.createElement('div', { style:{fontSize:12, color:"var(--text-light)", marginTop:6, fontFamily:"'Courier Prime',monospace"} }, "TAP TO ADD PHOTO")
                           )
                     ),
-                    React.createElement('input', { id:"photo-input", type:"file", accept:"image/*", capture:"environment", onChange:handlePhoto }),
-                  React.createElement('input', { id:"csv-import-input", type:"file", accept:".csv,text/csv", style:{display:"none"}, onChange:handleCsvImport })
+                    React.createElement('input', { id:"photo-input", type:"file", accept:"image/*", capture:"environment", onChange:handlePhoto })
                   ),
                   React.createElement('div', { className:"form-group" },
                     React.createElement('label', { className:"form-label" }, "Cut date"),
@@ -1003,7 +1043,9 @@ function App() {
         )
       ),
 
-      // ---------- Modal: Add Bed ----------
+      React.createElement('input', { id:"csv-import-input", type:"file", accept:".csv,text/csv", style:{display:"none"}, onChange:handleCsvImport }),
+
+            // ---------- Modal: Add Bed ----------
       modal === "addBed" && React.createElement('div', { className:"modal-overlay", onClick:e=>{ if(e.target===e.currentTarget) setModal(null); } },
         React.createElement('div', { className:"modal" },
           React.createElement('div', { className:"modal-title" }, "Add New Bed"),
