@@ -22,6 +22,17 @@
     body { background: var(--white); }
     #root { display: flex; justify-content: center; }
   </style>
+<script>
+  // Hide iOS address bar on scroll
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
+        window.scrollTo(0, 1);
+        setTimeout(function() { window.scrollTo(0, 0); }, 100);
+      }
+    }, 500);
+  });
+</script>
 </head>
 <body>
   <div id="root"></div>
@@ -43,7 +54,7 @@ const icons = {
   leaf: "M2 2s8 0 12 6c2 3 2 7 2 7s-4 0-7-2C4 10 2 2 2 2z",
   plus: "M12 5v14M5 12h14",
   bed: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10",
-  flower: "M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z",
+  flower: "M12 3a3 3 0 0 0 0 6 3 3 0 0 0 0-6zm0 14a3 3 0 0 0 0 6 3 3 0 0 0 0-6zM3 12a3 3 0 0 0 6 0 3 3 0 0 0-6 0zm14 0a3 3 0 0 0 6 0 3 3 0 0 0-6 0zM6.22 6.22a3 3 0 0 0 4.24 4.24 3 3 0 0 0-4.24-4.24zm11.32 0a3 3 0 0 0-4.24 4.24 3 3 0 0 0 4.24-4.24zm0 11.32a3 3 0 0 0-4.24-4.24 3 3 0 0 0 4.24 4.24zM6.22 17.54a3 3 0 0 0 4.24-4.24 3 3 0 0 0-4.24 4.24z",
   chart: "M18 20V10M12 20V4M6 20v-6",
   logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9",
   trash: "M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6",
@@ -568,7 +579,7 @@ function App() {
     React.createElement('div', { className: "auth-screen" },
       React.createElement(Icon, { d: icons.flower, size: 48, color: "rgba(255,255,255,0.65)", strokeWidth: 1.2 }),
       React.createElement('h1', { className: "auth-title" }, "Flower Tracker"),
-      React.createElement('p', { className: "auth-subtitle" }, "Track every stem, every season"),
+      React.createElement('p', { className: "auth-subtitle" }, "track every stem, every season"),
       React.createElement('div', { className: "auth-card" },
         React.createElement('div', { className: "auth-tabs" },
           React.createElement('button', { className: `auth-tab ${authMode==="login"?"active":""}`, onClick: ()=>{ setAuthMode("login"); setAuthError(""); } }, "Sign In"),
@@ -672,7 +683,7 @@ function App() {
       React.createElement('div', { className: "desktop-sidebar" },
         React.createElement('div', { className: "sidebar-brand" },
           React.createElement('div', { className: "sidebar-brand-title" }, "Flower Tracker"),
-          React.createElement('div', { className: "sidebar-brand-sub" }, "Track every stem, every season")
+          React.createElement('div', { className: "sidebar-brand-sub" }, "track every stem, every season")
         ),
         React.createElement('div', { className: "sidebar-nav" },
           ['log','cuts','beds','summary'].map(function(t) {
@@ -864,6 +875,16 @@ function App() {
               React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:()=>document.getElementById('csv-import-input').click(), disabled:syncing },
                 React.createElement(Icon, { d:icons.download, size:14 }), " Import CSV"
               ),
+              React.createElement('button', { className: "btn btn-secondary btn-sm", onClick:function(){
+                var csv = "Bed Name,Variety Name,Sown Date,Planted Date\nBed A,Sweet William,2026-02-01,2026-03-15\nBed A,Cornflower,2026-02-01,2026-03-15\nBed B,Snapdragon,,";
+                var blob = new Blob([csv],{type:'text/csv'});
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a'); a.href=url; a.download='flower_tracker_import_template.csv';
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              } },
+                React.createElement(Icon, { d:icons.download, size:14 }), " Template"
+              ),
               React.createElement('button', { className: "btn btn-primary btn-sm", onClick:()=>setModal("addBed") },
                 React.createElement(Icon, { d:icons.plus, size:15 }), " Add Bed"
               )
@@ -927,7 +948,7 @@ function App() {
           ),
           React.createElement('div', { className: "stats-grid" },
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, totalStems.toLocaleString()), React.createElement('div', { className: "stat-label" }, "Total Stems")),
-            React.createElement('div', { className: "stat-card accent" }, React.createElement('div', { className: "stat-val accent" }, "\u00a3"+totalRevenue.toFixed(0)), React.createElement('div', { className: "stat-label" }, "Est. Revenue")),
+            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, "\u00a3"+totalRevenue.toFixed(0)), React.createElement('div', { className: "stat-label" }, "Est. Revenue")),
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, periodCuts.length), React.createElement('div', { className: "stat-label" }, "Cuts Logged")),
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, userData.beds.length), React.createElement('div', { className: "stat-label" }, "Active Beds"))
           ),
@@ -939,7 +960,7 @@ function App() {
               )
             : React.createElement(React.Fragment, null,
                 React.createElement('div', { style:{display:"flex", background:"var(--green-mist)", borderRadius:"var(--radius-sm)", padding:3, marginBottom:14} },
-                  React.createElement('div', { style:{background:'var(--white)',borderRadius:'var(--radius)',border:'1px solid var(--border)',padding:'16px 20px',marginBottom:16} },
+                  React.createElement('div', { style:{background:'var(--white)',borderRadius:'var(--radius)',border:'1px solid var(--border)',padding:'16px 20px',marginBottom:16,width:'100%',boxSizing:'border-box',display:'block',clear:'both'} },
                   React.createElement('div', { style:{fontSize:12,fontWeight:600,color:'var(--text-mid)',textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:14} }, 'Stems by Month'),
                   (function(){
                     var allCuts = userData.cuts || [];
