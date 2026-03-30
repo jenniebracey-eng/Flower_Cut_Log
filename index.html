@@ -84,7 +84,7 @@ const css = `
 
   @media (min-width: 900px) {
     html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
-    .app { width: 100vw; max-width: 100vw; margin: 0; display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 100vh; height: 100vh; overflow: hidden; }
+    .app { width: 100vw; max-width: 100vw; margin: 0; display: grid; grid-template-columns: 260px 1fr; grid-template-rows: 100vh; height: 100vh; overflow: hidden; }
     .desktop-sidebar { display: flex !important; grid-column: 1; grid-row: 1; overflow-y: auto; }
     .top-bar { display: none !important; }
     .content { grid-column: 2; grid-row: 1; padding: 28px 40px 40px; overflow-y: auto; background: var(--green-mist); }
@@ -705,7 +705,7 @@ function App() {
       React.createElement('div', { className: "desktop-sidebar" },
         React.createElement('div', { className: "sidebar-brand" },
           React.createElement('div', { style:{display:'flex',alignItems:'center',gap:8} },
-            React.createElement('svg', { viewBox:"0 0 52 52", width:22, height:22 },
+            React.createElement('svg', { viewBox:"0 0 52 52", width:30, height:30 },
               React.createElement('ellipse', { cx:26, cy:11, rx:5, ry:7, fill:"rgba(255,255,255,0.90)" }),
               React.createElement('ellipse', { cx:36, cy:16, rx:5, ry:7, fill:"rgba(255,255,255,0.72)" }),
               React.createElement('ellipse', { cx:41, cy:26, rx:5, ry:7, fill:"rgba(255,255,255,0.90)" }),
