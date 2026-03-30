@@ -80,7 +80,7 @@ const css = `
   }
   body { background: var(--green-mist); font-family: 'DM Sans', sans-serif; color: var(--text-dark); }
   /* Mobile-first app shell */
-  .app { min-height: 100vh; height: 100%; max-width: 480px; margin: 0 auto; background: var(--white); position: relative; display: flex; flex-direction: column; overflow: hidden; }
+  .app { min-height: 100vh; min-height: 100dvh; height: 100%; max-width: 480px; margin: 0 auto; background: var(--white); position: relative; display: flex; flex-direction: column; overflow: hidden; }
 
   @media (min-width: 900px) {
     html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
@@ -94,7 +94,7 @@ const css = `
   .desktop-sidebar { display: none; flex-direction: column; background: var(--green-deep); color: var(--white); padding: 0; overflow-y: auto; }
   .sidebar-brand { padding: 32px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
   .sidebar-brand-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--white); font-weight: 700; line-height: 1.2; }
-  .sidebar-brand-sub { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 5px; letter-spacing: 0.03em; text-transform: none; line-height: 1.5; text-align: center; }
+  .sidebar-brand-sub { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 5px; letter-spacing: 0.03em; text-transform: none !important; line-height: 1.5; text-align: center; }
   .sidebar-nav { flex: 1; padding: 12px 0; }
   .sidebar-nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 24px; cursor: pointer; color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500; transition: all 0.15s; border-left: 3px solid transparent; }
   .sidebar-nav-item:hover { background: rgba(255,255,255,0.07); color: var(--white); }
@@ -107,7 +107,7 @@ const css = `
   .desktop-sidebar { display: none; flex-direction: column; background: var(--green-deep); color: var(--white); padding: 0; position: relative; grid-column: 1; }
   .sidebar-brand { padding: 32px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
   .sidebar-brand-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--white); font-weight: 700; line-height: 1.2; }
-  .sidebar-brand-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; letter-spacing: 0.05em; text-transform: none; }
+  .sidebar-brand-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; letter-spacing: 0.05em; text-transform: none !important; }
   .sidebar-nav { flex: 1; padding: 16px 0; }
   .sidebar-nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 24px; cursor: pointer; color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: all 0.15s; border-left: 3px solid transparent; }
   .sidebar-nav-item:hover { background: rgba(255,255,255,0.07); color: var(--white); }
@@ -604,7 +604,7 @@ function App() {
         ),
         React.createElement('div', { className: "form-group" },
           React.createElement('label', { className: "form-label" }, "Password"),
-          React.createElement('input', { className: "form-input", type: "password", placeholder: "••••••••", value: authPassword, onChange: e=>setAuthPassword(e.target.value), onKeyDown: e=>e.key==="Enter"&&handleAuth() })
+          React.createElement('input', { className: "form-input", type: "password", placeholder: "Enter password", value: authPassword, onChange: e=>setAuthPassword(e.target.value), onKeyDown: e=>e.key==="Enter"&&handleAuth() })
         ),
         authMode === "signup" && React.createElement('p', { style:{fontSize:12, color:"var(--text-light)", marginBottom:12} }, "Your data is stored securely in the cloud  ok access it from any device."),
         React.createElement('button', { className: "btn btn-primary", onClick: handleAuth, disabled: authLoading },
@@ -845,7 +845,7 @@ function App() {
               )
             : userData.cuts.map(cut =>
                 React.createElement('div', { key:cut.id, className: "cut-item" },
-                  cut.photo && React.createElement('img', { src:cut.photo, alt:"", style:{width:"100%", height:130, objectFit:"cover", borderRadius:8, marginBottom:10} }),
+                  cut.photo && React.createElement('img', { src:cut.photo, alt:"", style:{width:56, height:56, objectFit:"cover", borderRadius:6, flexShrink:0, marginLeft:10} }),
                   React.createElement('div', { className: "cut-item-top" },
                     React.createElement('div', null,
                       React.createElement('div', { className: "cut-variety" }, cut.variety_name),
