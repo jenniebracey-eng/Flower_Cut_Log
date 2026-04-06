@@ -315,6 +315,7 @@ function App() {
   const handleAuth = async () => {
     setAuthError("");
     if (!authEmail || !authPassword) { setAuthError("Please enter email and password."); return; }
+    if (authMode === "signup" && !consentChecked) { setAuthError("Please agree to the Terms of Service and Privacy Policy to create an account."); return; }
     if (authMode === "signup" && !authName) { setAuthError("Please enter your name."); return; }
     setAuthLoading(true);
     if (authMode === "signup") {
@@ -624,6 +625,54 @@ function App() {
         React.createElement('button', { className: "btn btn-primary", onClick: handleAuth, disabled: authLoading },
           authLoading ? "Please wait..." : authMode==="login" ? "Sign In" : "Create Account"
         )
+      )
+    )
+  ),
+    showPrivacy && React.createElement('div', { style: { position:'fixed', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,0.5)', zIndex:1000, overflowY:'auto', padding:'20px' } },
+      React.createElement('div', { style: { background:'#fff', borderRadius:'12px', maxWidth:'600px', margin:'0 auto', padding:'28px 24px' } },
+        React.createElement('div', { style: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px' } },
+          React.createElement('h2', { style: { margin:0, fontSize:'20px', fontWeight:500 } }, 'Privacy Policy'),
+          React.createElement('button', { onClick: () => setShowPrivacy(false), style: { background:'none', border:'none', fontSize:'24px', cursor:'pointer', color:'#666' } }, 'x')
+        ),
+        React.createElement('p', { style: { fontSize:'13px', color:'#888', marginBottom:'20px' } }, 'Flower Tracker - last updated April 2026'),
+        React.createElement('p', null, 'Flower Tracker is operated by JLR Advisory Ltd, a company registered in England and Wales. We take your privacy seriously and only collect what we need to run the service.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'Who we are'),
+        React.createElement('p', null, 'JLR Advisory Ltd, registered in England and Wales, company number 16956577. Contact: hello@jlradvisory.co.uk'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'What we collect'),
+        React.createElement('p', null, 'We collect only what is necessary: your email address and encrypted password, farming data you enter (beds, varieties, cuts, revenue), photos you upload, and payment status. We do not collect location data or browsing history.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'How we use it'),
+        React.createElement('p', null, 'To provide and maintain your account, process payments, send transactional emails (password resets, receipts), and improve the service. We will never sell your data or use it for advertising.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'Who we share it with'),
+        React.createElement('p', null, 'Supabase (database and auth, servers in Frankfurt, Germany - EU), Stripe (payment processing - we never see your card details), and Netlify (hosting). No other third parties.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'Your rights'),
+        React.createElement('p', null, 'Under UK GDPR you can access, correct, delete, or export your data at any time. Email hello@jlradvisory.co.uk and we will respond within 30 days. You can also complain to the ICO at ico.org.uk.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'Cookies'),
+        React.createElement('p', null, 'We use only essential session cookies to keep you logged in. No advertising or analytics cookies.'),
+        React.createElement('button', { onClick: () => setShowPrivacy(false), style: { marginTop:'24px', padding:'10px 24px', background:'#6b7c3f', color:'#fff', border:'none', borderRadius:'8px', cursor:'pointer', fontSize:'15px' } }, 'Close')
+      )
+    ),
+    showTerms && React.createElement('div', { style: { position:'fixed', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,0.5)', zIndex:1000, overflowY:'auto', padding:'20px' } },
+      React.createElement('div', { style: { background:'#fff', borderRadius:'12px', maxWidth:'600px', margin:'0 auto', padding:'28px 24px' } },
+        React.createElement('div', { style: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px' } },
+          React.createElement('h2', { style: { margin:0, fontSize:'20px', fontWeight:500 } }, 'Terms of Service'),
+          React.createElement('button', { onClick: () => setShowTerms(false), style: { background:'none', border:'none', fontSize:'24px', cursor:'pointer', color:'#666' } }, 'x')
+        ),
+        React.createElement('p', { style: { fontSize:'13px', color:'#888', marginBottom:'20px' } }, 'Flower Tracker - last updated April 2026'),
+        React.createElement('p', null, 'These terms govern your use of Flower Tracker, operated by JLR Advisory Ltd. By creating an account you agree to these terms.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'The service'),
+        React.createElement('p', null, 'Flower Tracker is a web application for flower growers to record stem cuts, manage beds and varieties, and track revenue. It is provided as-is. We make reasonable efforts to keep it available but do not guarantee uninterrupted access.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'Your account'),
+        React.createElement('p', null, 'You are responsible for keeping your credentials secure. You must be 18 or over to create an account. One account per person - accounts are not transferable.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'Free and paid tiers'),
+        React.createElement('p', null, 'Flower Tracker offers a free tier and a paid Pro tier unlocked by a one-off payment via Stripe. We do not store card details. The Pro upgrade is a one-off purchase with no recurring subscription unless explicitly stated. By completing purchase you agree that delivery begins immediately, which may affect your 14-day cancellation right.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'Your data'),
+        React.createElement('p', null, 'All farming data you enter belongs to you. You can export it at any time using the built-in CSV export. We do not claim ownership of your data and will not use it commercially.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'Limitation of liability'),
+        React.createElement('p', null, 'We are not liable for any loss of data, loss of revenue, or indirect losses arising from your use of Flower Tracker. We strongly recommend using the backup/export feature regularly.'),
+        React.createElement('h3', { style: { fontWeight:500, marginTop:'20px' } }, 'Governing law'),
+        React.createElement('p', null, 'These terms are governed by the laws of England and Wales.'),
+        React.createElement('p', { style: { marginTop:'16px' } }, 'Questions? Email hello@jlradvisory.co.uk'),
+        React.createElement('button', { onClick: () => setShowTerms(false), style: { marginTop:'24px', padding:'10px 24px', background:'#6b7c3f', color:'#fff', border:'none', borderRadius:'8px', cursor:'pointer', fontSize:'15px' } }, 'Close')
       )
     )
   );
