@@ -1188,6 +1188,15 @@ function App() {
         )
       ),
 
+      React.createElement('button', {
+        className: "nav-item",
+        onClick: handleLogout,
+        style: { flex:"0 0 auto", width:52 }
+      },
+        React.createElement(Icon, { d: icons.logout, size:20 }),
+        React.createElement('span', { className:"nav-label" }, "Out")
+      ),
+
       React.createElement('input', { id:"csv-import-input", type:"file", accept:".csv,text/csv", style:{display:"none"}, onChange:handleCsvImport }),
 
             // ---------- Modal: Add Bed ----------
