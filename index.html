@@ -762,7 +762,7 @@ function App() {
             syncing ? "Syncing..." : displayName
           )
         ),
-        React.createElement('a', { href: 'https://buy.stripe.com/cNi5kFduN8iAgh1bI74ow01?client_reference_id=' + (session && session.user ? session.user.id : '') + '&prefilled_email=' + encodeURIComponent(session && session.user ? session.user.email : ''), target: '_blank', rel: 'noopener noreferrer', className: "btn btn-sm", style: { background:"#c8a951", color:"#1a2a20", width:"auto", fontWeight:700, textDecoration:"none", marginBottom:8, display:"flex", alignItems:"center", gap:6 } }, "Upgrade to Pro"),
+         React.createElement('a', { href: 'https://buy.stripe.com/cNi5kFduN8iAgh1bI74ow01?client_reference_id=' + (session && session.user ? session.user.id : '') + '&prefilled_email=' + encodeURIComponent(session && session.user ? session.user.email : ''), target: '_blank', rel: 'noopener noreferrer', className: "btn btn-sm", style: { background:"#c8a951", color:"#1a2a20", width:"auto", fontWeight:700, textDecoration:"none", marginBottom:8, display:"flex", alignItems:"center", gap:6 } }, "Upgrade to Pro"),
         React.createElement('button', { className: "btn btn-sm", style: { background:"rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.8)", width:"auto" }, onClick: handleLogout },
           React.createElement(Icon, { d: icons.logout, size: 14 }), " Out"
         )
