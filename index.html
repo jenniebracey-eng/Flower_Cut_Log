@@ -581,7 +581,21 @@ function App() {
   );
 
   // ---------- Auth screen ----------
-  if (!session) return React.createElement(React.Fragment, null,
+  if (resetMode) return React.createElement(React.Fragment, null,
+      React.createElement('style', null, css),
+      React.createElement('div', { className: "auth-screen" },
+        React.createElement('div', { className: "auth-card" },
+          React.createElement('h2', { style:{textAlign:"center", marginBottom:16, color:"var(--green-deep)"} }, "Set new password"),
+          React.createElement('div', { className: "form-group" },
+            React.createElement('label', { className: "form-label" }, "New password"),
+            React.createElement('input', { className: "form-input", type: "password", placeholder: "Enter new password", value: newPassword, onChange: function(e){ setNewPassword(e.target.value); } })
+          ),
+          React.createElement('button', { className: "btn btn-primary", style:{marginTop:8}, onClick: function(){ sb.auth.updateUser({ password: newPassword }).then(function(){ alert('Password updated!'); setResetMode(false); }); } }, "Update password")
+        )
+      )
+    );
+
+    if (!session) return React.createElement(React.Fragment, null,
     React.createElement('style', null, css),
     React.createElement('div', { className: "auth-screen" },
       React.createElement('svg', { viewBox:"0 0 120 120", width:80, height:80, style:{marginBottom:8} },
