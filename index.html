@@ -398,7 +398,7 @@ function App() {
 
   const handleAddVariety = async () => {
     if (!varForm.name || !varForm.bedId) return;
-    if ((userData.varieties||[]).length >= 10) { showToast("Free plan: up to 10 varieties. Upgrade to Flower Tracker Pro for unlimited."); return; }
+    if ((userData.varieties||[]).length >= 15) { showToast("Free plan: up to 15 varieties. Upgrade to Flower Tracker Pro for unlimited."); return; }
     setSyncing(true);
     const { data, error } = await sb.from("varieties").insert({
       user_id: session.user.id, bed_id: varForm.bedId, name: varForm.name,
