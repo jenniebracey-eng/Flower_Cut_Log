@@ -745,6 +745,7 @@ function App() {
           React.createElement('span', null, session && session.user && session.user.email),
           React.createElement('span', { style:{fontSize:10, opacity:0.5, marginLeft:8} }, 'v')
         ),
+        React.createElement('a', { href: 'https://buy.stripe.com/cNi5kFduN8iAgh1bI74ow01?client_reference_id=' + (session && session.user ? session.user.id : '') + '&prefilled_email=' + encodeURIComponent(session && session.user ? session.user.email : ''), target: '_blank', rel: 'noopener noreferrer', style: { display:"block", background:"#c8a951", color:"#1a2a20", width:"100%", fontWeight:700, textDecoration:"none", marginTop:8, padding:"8px 12px", borderRadius:6, fontSize:12, textAlign:"center" } }, "Upgrade to Pro"),
         React.createElement('div', { id:'ft-signout-menu', style:{display:'none', marginTop:8} },
           React.createElement('button', {
             style:{width:'100%', padding:'8px 12px', background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:6, color:'rgba(255,255,255,0.8)', cursor:'pointer', fontSize:12, textAlign:'left'},
