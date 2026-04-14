@@ -178,7 +178,7 @@ const css = `
   .empty-sub { font-size: 13px; }
 
   /* Stats */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
   .stat-card { background: linear-gradient(135deg, var(--green-pale), #dff0e2); border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); }
   .stat-card.accent { background: linear-gradient(135deg, #f5f0e8, #ede5d5); border-color: var(--cream); }
   .stat-val { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--green-deep); font-weight: 700; }
@@ -1063,9 +1063,11 @@ React.createElement('div', { dangerouslySetInnerHTML:{__html:'<svg xmlns="http:/
           ),
           React.createElement('div', { className: "stats-grid" },
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, totalStems.toLocaleString()), React.createElement('div', { className: "stat-label" }, "Total Stems")),
-            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, "\u00a3"+totalRevenue.toFixed(0)), React.createElement('div', { className: "stat-label" }, "Est. Revenue")),
+            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, "£"+totalRevenue.toFixed(0)), React.createElement('div', { className: "stat-label" }, "Est. Revenue")),
+            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, new Set(periodCuts.map(function(c){return c.variety_name;})).size), React.createElement('div', { className: "stat-label" }, "Varieties Cut")),
             React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, periodCuts.length), React.createElement('div', { className: "stat-label" }, "Cuts Logged")),
-            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, userData.beds.length), React.createElement('div', { className: "stat-label" }, "Active Beds"))
+            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, userData.beds.length), React.createElement('div', { className: "stat-label" }, "Active Beds")),
+            React.createElement('div', { className: "stat-card" }, React.createElement('div', { className: "stat-val" }, periodCuts.length ? (periodCuts.reduce(function(s,c){return s+(c.length_cm||0);},0)/periodCuts.length).toFixed(1)+"cm" : "-"), React.createElement('div', { className: "stat-label" }, "Avg Length"))
           ),
           periodCuts.length === 0
             ? React.createElement('div', { className: "empty" },
