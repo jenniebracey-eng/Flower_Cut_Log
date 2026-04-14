@@ -265,6 +265,7 @@ function App() {
   const [authError, setAuthError] = React.useState("");
   const [authLoading, setAuthLoading] = React.useState(false);
         const [resetMode, setResetMode] = React.useState(window.location.hash.includes('type=recovery'));
+  const [gdprConsent, setGdprConsent] = React.useState(false);
         const [newPassword, setNewPassword] = React.useState("");
 
   const [logForm, setLogForm] = React.useState({ bedId:"", varietyId:"", stems:"10", length:"", price:"", quality:"", notes:"", photo:"", cutDate:new Date().toISOString().slice(0,10) });
@@ -581,6 +582,34 @@ function App() {
   );
 
   // ---------- Auth screen ----------
+  const _hash = window.location.hash;
+  const _placeholderStyle = {textAlign:'center', color:'var(--text-light)', fontSize:14, lineHeight:1.6};
+  if (_hash === '#/privacy') return React.createElement(React.Fragment, null,
+    React.createElement('style', null, css),
+    React.createElement('div', { className: 'auth-screen' },
+      React.createElement('div', { className: 'auth-card' },
+        React.createElement('div', { className: 'auth-logo' }, React.createElement('span', null, 'Flower Tracker')),
+        React.createElement('h2', { style:{textAlign:'center', marginBottom:16} }, 'Privacy Policy'),
+        React.createElement('p', { style:_placeholderStyle }, 'Full Privacy Policy coming soon.'),
+        React.createElement('div', { style:{textAlign:'center', marginTop:24} },
+          React.createElement('a', { href:'/', style:{color:'var(--olive)', fontSize:13} }, 'Back to sign up')
+        )
+      )
+    )
+  );
+  if (_hash === '#/terms') return React.createElement(React.Fragment, null,
+    React.createElement('style', null, css),
+    React.createElement('div', { className: 'auth-screen' },
+      React.createElement('div', { className: 'auth-card' },
+        React.createElement('div', { className: 'auth-logo' }, React.createElement('span', null, 'Flower Tracker')),
+        React.createElement('h2', { style:{textAlign:'center', marginBottom:16} }, 'Terms of Service'),
+        React.createElement('p', { style:_placeholderStyle }, 'Full Terms of Service coming soon.'),
+        React.createElement('div', { style:{textAlign:'center', marginTop:24} },
+          React.createElement('a', { href:'/', style:{color:'var(--olive)', fontSize:13} }, 'Back to sign up')
+        )
+      )
+    )
+  );
   if (resetMode) return React.createElement(React.Fragment, null,
       React.createElement('style', null, css),
       React.createElement('div', { className: "auth-screen" },
@@ -645,7 +674,18 @@ function App() {
           React.createElement('input', { className: "form-input", type: "password", placeholder: "Enter password", value: authPassword, onChange: e=>setAuthPassword(e.target.value), onKeyDown: e=>e.key==="Enter"&&handleAuth() })
         ),
         authMode === "signup" && React.createElement('p', { style:{fontSize:12, color:"var(--text-light)", marginBottom:12} }, "Your data is stored securely in the cloud  ok access it from any device."),
-        React.createElement('button', { className: "btn btn-primary", onClick: handleAuth, disabled: authLoading },
+        authMode === "signup" && React.createElement('div', { style:{marginBottom:12} },
+          React.createElement('label', { style:{display:'flex', alignItems:'flex-start', gap:8, fontSize:13, color:'var(--text-light)', cursor:'pointer'} },
+            React.createElement('input', { type:'checkbox', checked:gdprConsent, onChange:function(e){setGdprConsent(e.target.checked);}, style:{marginTop:2, accentColor:'var(--olive)', flexShrink:0} }),
+            React.createElement('span', null,
+              'I agree to the ',
+              React.createElement('a', { href:'#/privacy', style:{color:'var(--olive)'} }, 'Privacy Policy'),
+              ' and ',
+              React.createElement('a', { href:'#/terms', style:{color:'var(--olive)'} }, 'Terms of Service')
+            )
+          )
+        ),
+        React.createElement('button', { className: "btn btn-primary", onClick: handleAuth, disabled: authLoading || (authMode === "signup" && !gdprConsent) },
           authLoading ? "Please wait..." : authMode==="login" ? "Sign In" : "Create Account"
         ),
         authMode === "login" && React.createElement('p', { style:{textAlign:"center", marginTop:12} },
