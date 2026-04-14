@@ -586,9 +586,15 @@ function App() {
   const _placeholderStyle = {textAlign:'center', color:'var(--text-light)', fontSize:14, lineHeight:1.6};
   if (currentPage === 'privacy') return React.createElement(React.Fragment, null,
     React.createElement('style', null, css),
-    React.createElement('div', { className: 'auth-screen' },
-      React.createElement('div', { className: 'auth-card', style:{maxWidth:580, overflowY:'auto', maxHeight:'90vh'} },
-        React.createElement('div', { className: 'auth-logo' }, React.createElement('span', null, 'Flower Tracker')),
+    React.createElement('div', { style:{minHeight:'100vh', background:'#f5f0e8', display:'flex', alignItems:'flex-start', justifyContent:'center', padding:'40px 20px'} },
+      React.createElement('div', { style:{maxWidth:580, width:'100%'} },
+        React.createElement('div', { style:{display:'flex', alignItems:'center', gap:12, marginBottom:24, paddingBottom:16, borderBottom:'1px solid rgba(92,107,46,0.15)'} },
+          React.createElement('div', { dangerouslySetInnerHTML:{__html:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="64" height="64" style="display:block"><g transform="translate(100,95)"><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(180,195,160,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(0,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(165,182,145,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(51.4,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(180,195,160,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(102.8,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(165,182,145,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(154.2,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(180,195,160,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(205.7,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(165,182,145,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(257.1,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(180,195,160,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(308.5,0,0)"/><line x1="0" y1="22" x2="0" y2="90" stroke="rgba(140,160,110,0.50)" stroke-width="3" stroke-linecap="round"/><ellipse cx="0" cy="68" rx="5" ry="9" fill="rgba(140,160,110,0.35)" transform="rotate(30,0,68)"/><circle cx="0" cy="0" r="21" fill="rgba(210,222,198,0.92)" stroke="rgba(140,160,110,0.30)" stroke-width="1"/><polyline points="-88,34 -22,-8 20,4 88,-42" fill="none" stroke="#d4622a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="-88" cy="34" r="6" fill="#d4622a"/><circle cx="-22" cy="-8" r="6" fill="#d4622a"/><circle cx="20" cy="4" r="6" fill="#d4622a"/><circle cx="88" cy="-42" r="6" fill="#d4622a"/></g></svg>'} }),
+          React.createElement('div', null,
+            React.createElement('div', { style:{fontFamily:'Georgia,serif', fontWeight:700, fontSize:20, color:'#2d3520'} }, 'Flower Tracker'),
+            React.createElement('div', { style:{fontFamily:'Georgia,serif', fontSize:12, color:'#7a8a5a', marginTop:2} }, 'track every stem, every season')
+          )
+        ),
         React.createElement('h2', { style:{textAlign:'center', marginBottom:16} }, 'Privacy Policy'),
         React.createElement('div', { style:{fontSize:14, color:'var(--text-light)', lineHeight:1.8, textAlign:'left'} },
           React.createElement('h3', { style:{color:'var(--text)', fontSize:14, fontWeight:600, marginTop:20, marginBottom:4} }, 'What we collect'),
@@ -611,9 +617,15 @@ function App() {
   );
   if (currentPage === 'terms') return React.createElement(React.Fragment, null,
     React.createElement('style', null, css),
-    React.createElement('div', { className: 'auth-screen' },
-      React.createElement('div', { className: 'auth-card', style:{maxWidth:580, overflowY:'auto', maxHeight:'90vh'} },
-        React.createElement('div', { className: 'auth-logo' }, React.createElement('span', null, 'Flower Tracker')),
+    React.createElement('div', { style:{minHeight:'100vh', background:'#f5f0e8', display:'flex', alignItems:'flex-start', justifyContent:'center', padding:'40px 20px'} },
+      React.createElement('div', { style:{maxWidth:580, width:'100%'} },
+        React.createElement('div', { style:{display:'flex', alignItems:'center', gap:12, marginBottom:24, paddingBottom:16, borderBottom:'1px solid rgba(92,107,46,0.15)'} },
+          React.createElement('div', { dangerouslySetInnerHTML:{__html:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="64" height="64" style="display:block"><g transform="translate(100,95)"><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(180,195,160,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(0,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(165,182,145,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(51.4,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(180,195,160,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(102.8,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(165,182,145,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(154.2,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(180,195,160,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(205.7,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(165,182,145,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(257.1,0,0)"/><ellipse cx="0" cy="-46" rx="24" ry="36" fill="rgba(180,195,160,0.90)" stroke="rgba(140,160,110,0.60)" stroke-width="1.5" transform="rotate(308.5,0,0)"/><line x1="0" y1="22" x2="0" y2="90" stroke="rgba(140,160,110,0.50)" stroke-width="3" stroke-linecap="round"/><ellipse cx="0" cy="68" rx="5" ry="9" fill="rgba(140,160,110,0.35)" transform="rotate(30,0,68)"/><circle cx="0" cy="0" r="21" fill="rgba(210,222,198,0.92)" stroke="rgba(140,160,110,0.30)" stroke-width="1"/><polyline points="-88,34 -22,-8 20,4 88,-42" fill="none" stroke="#d4622a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="-88" cy="34" r="6" fill="#d4622a"/><circle cx="-22" cy="-8" r="6" fill="#d4622a"/><circle cx="20" cy="4" r="6" fill="#d4622a"/><circle cx="88" cy="-42" r="6" fill="#d4622a"/></g></svg>'} }),
+          React.createElement('div', null,
+            React.createElement('div', { style:{fontFamily:'Georgia,serif', fontWeight:700, fontSize:20, color:'#2d3520'} }, 'Flower Tracker'),
+            React.createElement('div', { style:{fontFamily:'Georgia,serif', fontSize:12, color:'#7a8a5a', marginTop:2} }, 'track every stem, every season')
+          )
+        ),
         React.createElement('h2', { style:{textAlign:'center', marginBottom:16} }, 'Terms of Service'),
         React.createElement('div', { style:{fontSize:14, color:'var(--text-light)', lineHeight:1.8, textAlign:'left'} },
           React.createElement('h3', { style:{color:'var(--text)', fontSize:14, fontWeight:600, marginTop:20, marginBottom:4} }, 'What Flower Tracker does'),
