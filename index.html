@@ -274,7 +274,6 @@ function App() {
   const [varForm, setVarForm] = React.useState({ name:"", bedId:"", colour:"", notes:"", sownDate:"", plantedDate:"" });
   const [logErrors, setLogErrors] = React.useState({});
   const [summaryView, setSummaryView] = React.useState("variety");
-  const [chartPeriod, setChartPeriod] = React.useState("month");
   const [summarySort, setSummarySort] = React.useState("amount");
   const [summaryPeriod, setSummaryPeriod] = React.useState("season");
   const [onboardBedName, setOnboardBedName] = React.useState("");
@@ -489,7 +488,7 @@ function App() {
     var d=new Date(c.cut_at);
     if(summaryPeriod==='week'){var ws=new Date(_now);ws.setDate(_now.getDate()-_now.getDay());ws.setHours(0,0,0,0);return d>=ws;}
     if(summaryPeriod==='month'){return d.getMonth()===_now.getMonth()&&d.getFullYear()===_now.getFullYear();}
-    if(summaryPeriod==='season'){var yr=_now.getMonth()>=3?_now.getFullYear():_now.getFullYear()-1;return d>=new Date(yr,3,1);}
+    if(summaryPeriod==='season'){var seasonStart=new Date(_now.getFullYear(),0,1);if(new Date(c.cut_at)<seasonStart)return false;}
     return true;
   });
   const totalStems=periodCuts.reduce(function(s,c){return s+c.stems;},0)||0;
@@ -1084,9 +1083,7 @@ React.createElement('div', { dangerouslySetInnerHTML:{__html:'<svg xmlns="http:/
                     })
                   ),
                   React.createElement('div', { style:{display:"flex", background:"var(--green-mist)", borderRadius:8, padding:2, gap:2} },
-                    [{id:"week",label:"Week"},{id:"month",label:"Month"}].map(function(p){
-                      return React.createElement('button', { key:p.id, onClick:function(){setChartPeriod(p.id);}, style:{padding:"5px 10px",border:"none",borderRadius:6,fontSize:11,fontWeight:600,cursor:"pointer",background:chartPeriod===p.id?"var(--white)":"transparent",color:chartPeriod===p.id?"var(--green-dark)":"var(--text-light)",boxShadow:chartPeriod===p.id?"0 1px 4px rgba(26,58,42,0.10)":"none"} }, p.label);
-                    })
+
                   )
                 ),
                 (function(){
@@ -1121,7 +1118,7 @@ React.createElement('div', { dangerouslySetInnerHTML:{__html:'<svg xmlns="http:/
                         var y=H-18-barH;
                         return React.createElement('g',{key:b.label},
                           React.createElement('rect',{x:x,y:y,width:barW,height:barH,rx:3,fill:"var(--green-mid)"}),
-                          React.createElement('text',{x:x+barW/2,y:H-4,textAnchor:"middle",fontSize:9,fill:"var(--text-light)"},b.label.length>8?b.label.substring(0,7)+"...":b.label),
+                          React.createElement('text',{x:x+barW/2,y:H-4,textAnchor:"middle",fontSize:9,fill:"var(--text-light)"},b.label.length>14?b.label.substring(0,13)+"...":b.label),
                           barH>14?React.createElement('text',{x:x+barW/2,y:y-3,textAnchor:"middle",fontSize:9,fill:"var(--text-mid)"},prefix+b.value.toLocaleString()):null
                         );
                       })
