@@ -1092,7 +1092,7 @@ React.createElement('div', { dangerouslySetInnerHTML:{__html:'<svg xmlns="http:/
                     var grouped={};
                     periodCuts.forEach(function(c){
                       var key;
-                      if(chartPeriod==="week"){var d=new Date(c.cut_at);var day=d.getDay();var mon=new Date(d);mon.setDate(d.getDate()-(day===0?6:day-1));key=mon.toLocaleDateString("en-GB",{day:"numeric",month:"short"});}
+                      if(false){var d=new Date(c.cut_at);var day=d.getDay();var mon=new Date(d);mon.setDate(d.getDate()-(day===0?6:day-1));key=mon.toLocaleDateString("en-GB",{day:"numeric",month:"short"});}
                       else{key=new Date(c.cut_at).toLocaleDateString("en-GB",{month:"short",year:"2-digit"});}
                       if(!grouped[key])grouped[key]={stems:0,revenue:0,sort:new Date(c.cut_at).getTime()};
                       grouped[key].stems+=(c.stems||0);grouped[key].revenue+=(c.stems||0)*(c.price_per_stem||0);
